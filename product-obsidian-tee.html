@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Obsidian Oversized Tee — 340 GSM heavyweight cotton. Eclipse Midnight Collection. Own the Darkness." />
+  <meta property="og:title" content="Obsidian Oversized Tee — ECLIPSE" />
+  <title>Obsidian Oversized Tee — ECLIPSE</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="components.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js" defer></script>
+</head>
+<body style="opacity:0;">
+<script>window.addEventListener('DOMContentLoaded',()=>{requestAnimationFrame(()=>{document.body.style.transition='opacity 0.5s cubic-bezier(0.16,1,0.3,1)';document.body.style.opacity='1';});});</script>
+
+  <!-- NAVBAR -->
+  <header id="navbar" class="visible scrolled" role="banner">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo active">ECLIPSE</a>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <div class="nav-dropdown">
+          <span>Collections<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m19 9-7 7-7-7"/></svg></span>
+          <div class="dropdown-menu">
+            <a href="collection-midnight.html">T-Shirts</a>
+            <a href="collection-silent.html">Shirts</a>
+          </div>
+        </div>
+        <a href="index.html#new-arrivals">New Arrivals</a>
+        <a href="index.html#philosophy">About</a>
+        <a href="index.html#newsletter">Contact</a>
+      </nav>
+      <div class="nav-icons">
+        <button class="nav-icon-btn" id="search-btn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 15.803a7.5 7.5 0 0 0 10.607 0z"/></svg></button>
+        <button class="nav-icon-btn" aria-label="Wishlist" id="pp-header-wishlist"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg></button>
+        <button class="nav-icon-btn" id="cart-btn" aria-label="Cart"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg><span class="cart-badge" id="cart-count">0</span></button>
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SEARCH + MOBILE MENU -->
+  <div id="search-overlay" role="dialog" aria-label="Search"><button class="search-close" id="search-close" aria-label="Close"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button><p class="search-label">What are you looking for?</p><div class="search-input-wrap"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 15.803a7.5 7.5 0 0 0 10.607 0z"/></svg><input type="text" id="search-input" placeholder="Search collections…" /></div></div>
+  <nav id="mobile-menu" role="dialog" aria-label="Navigation"><div class="mobile-menu-logo">Eclipse</div><ul class="mobile-nav-links"><li><a href="index.html">Home</a></li><li><a href="collection-midnight.html">T-Shirts</a></li><li><a href="collection-silent.html">Shirts</a></li></ul><div class="mobile-menu-footer"><a href="#">Instagram</a><a href="#">Privacy</a><a href="#">Returns</a></div></nav>
+
+  <main>
+    <div class="product-page">
+      <div class="pp-layout">
+
+        <!-- ══ GALLERY ══ -->
+        <div class="pp-gallery" style="padding-top: var(--nav-height);">
+          <!-- Main image -->
+          <div class="pp-main-image" id="pp-main-img" title="Click to zoom" aria-label="Product image — click to zoom">
+            <img id="pp-main-img-el" src="product_tshirt_model.jpg" alt="Obsidian Oversized Tee — front view" />
+            <span class="pp-img-label" id="pp-img-label">Front</span>
+          </div>
+          <!-- Thumbnails -->
+          <div class="pp-thumbs" role="tablist" aria-label="Product images">
+            <div class="pp-thumb active" role="tab" data-label="Front"    title="Front view">    <img src="product_tshirt_model.jpg" alt="Front"    loading="lazy" /></div>
+            <div class="pp-thumb"        role="tab" data-label="Back"     title="Back view">     <img src="product_back_view.jpg"    alt="Back"     loading="lazy" onerror="this.src='product_tshirt_model.jpg'" /></div>
+            <div class="pp-thumb"        role="tab" data-label="Lifestyle" title="Lifestyle">   <img src="product_tshirt_model.jpg" alt="Lifestyle" loading="lazy" /></div>
+            <div class="pp-thumb"        role="tab" data-label="Fabric"   title="Fabric detail"><img src="product_tshirt_1.jpg"     alt="Fabric"   loading="lazy" /></div>
+          </div>
+        </div>
+
+        <!-- ══ PRODUCT INFO ══ -->
+        <div class="pp-info" style="padding-top: calc(var(--nav-height) + 48px);">
+
+          <!-- Breadcrumb -->
+          <nav class="pp-breadcrumb" aria-label="Breadcrumb">
+            <a href="index.html">Home</a>
+            <span class="sep">—</span>
+            <a href="collection-midnight.html">Midnight Collection</a>
+            <span class="sep">—</span>
+            <span style="color: var(--text-muted);">Obsidian Tee</span>
+          </nav>
+
+          <p class="pp-category">Midnight Collection · SS 2025</p>
+          <h1 class="pp-name">Obsidian Oversized Tee</h1>
+          <p class="pp-tagline">340 GSM · Heavyweight Cotton · Tubular Body</p>
+
+          <div class="pp-price-wrap">
+            <span class="pp-price">₹2,499</span>
+            <span class="pp-price-tag">In Stock</span>
+          </div>
+
+          <!-- Color -->
+          <div class="pp-section">
+            <div class="pp-section-label">
+              Colour <span data-product-color-display>Carbon Black</span>
+            </div>
+            <div class="pp-colors" role="group" aria-label="Select colour">
+              <div class="pp-color-swatch active" style="background:#1a1a1a;" data-color="Carbon Black" title="Carbon Black"></div>
+              <div class="pp-color-swatch"        style="background:#2d2d2d;" data-color="Off-Black"    title="Off-Black"></div>
+              <div class="pp-color-swatch"        style="background:#383838;" data-color="Washed Black" title="Washed Black"></div>
+            </div>
+          </div>
+
+          <!-- Size -->
+          <div class="pp-section">
+            <div class="pp-section-label">
+              Size <span data-product-size-display>M</span>
+              <button class="pp-size-guide-link" onclick="document.querySelector('[data-accordion=\'size\']')?.click()">Size Guide</button>
+            </div>
+            <div class="pp-sizes" role="group" aria-label="Select size">
+              <button class="pp-size"          data-size="XS">XS</button>
+              <button class="pp-size"          data-size="S" >S</button>
+              <button class="pp-size active"   data-size="M" >M</button>
+              <button class="pp-size"          data-size="L" >L</button>
+              <button class="pp-size"          data-size="XL">XL</button>
+              <button class="pp-size"          data-size="XXL">XXL</button>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div class="pp-cta-row">
+            <button class="pp-add-cart-btn" id="pp-add-cart-btn"
+              data-add-cart="obsidian-tee"
+              data-product-id="obsidian-tee"
+              aria-label="Add Obsidian Oversized Tee to cart">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg>
+              Add to Cart
+            </button>
+            <button class="pp-wishlist-btn" id="pp-wishlist-btn" aria-label="Add to wishlist">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+              Save to Wishlist
+            </button>
+          </div>
+
+          <!-- Accordion: Description, Fabric, Size Guide -->
+          <div class="pp-accordion" role="list">
+
+            <div class="pp-accordion-item open" role="listitem">
+              <button class="pp-accordion-trigger" aria-expanded="true" data-accordion="desc">
+                Description
+                <span class="pp-accordion-icon" aria-hidden="true"></span>
+              </button>
+              <div class="pp-accordion-body">
+                <div class="pp-accordion-content">
+                  <p>The Obsidian Tee is built from 340 GSM heavyweight combed cotton — a fabric that demands attention through its weight and drape alone. Constructed with a tubular body for a seamless silhouette.</p>
+                  <p>The collar is a 2×2 ribbed structure with reinforced seaming to hold its shape through years of wear. The drop shoulder construction places the seam exactly 3cm past the natural shoulder point — enough to feel intentional, not accidental.</p>
+                  <p>Pre-washed and pre-shrunk. What you see is what you'll always wear.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="pp-accordion-item" role="listitem">
+              <button class="pp-accordion-trigger" aria-expanded="false" data-accordion="fabric">
+                Fabric &amp; Care
+                <span class="pp-accordion-icon" aria-hidden="true"></span>
+              </button>
+              <div class="pp-accordion-body">
+                <div class="pp-accordion-content">
+                  <ul>
+                    <li>100% Combed Ring-Spun Cotton</li>
+                    <li>340 GSM — Heavyweight single jersey</li>
+                    <li>Tubular body construction — no side seams</li>
+                    <li>2×2 ribbed collar with reinforced seaming</li>
+                    <li>Pre-washed · Pre-shrunk · Enzyme-softened</li>
+                  </ul>
+                  <p style="margin-top: 16px;">Machine wash cold with like colours. Tumble dry low. Do not bleach. Do not iron on print.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="pp-accordion-item" role="listitem">
+              <button class="pp-accordion-trigger" aria-expanded="false" data-accordion="size">
+                Size Guide
+                <span class="pp-accordion-icon" aria-hidden="true"></span>
+              </button>
+              <div class="pp-accordion-body">
+                <div class="pp-accordion-content">
+                  <p>All measurements in centimetres. Model is 6'1" / 185cm and wears size M.</p>
+                  <table class="size-table">
+                    <thead>
+                      <tr><th>Size</th><th>Chest</th><th>Length</th><th>Shoulder</th><th>Sleeve</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>XS</td><td>98</td><td>68</td><td>50</td><td>21</td></tr>
+                      <tr><td>S</td> <td>104</td><td>71</td><td>53</td><td>22</td></tr>
+                      <tr><td>M</td> <td>110</td><td>74</td><td>56</td><td>23</td></tr>
+                      <tr><td>L</td> <td>116</td><td>77</td><td>59</td><td>24</td></tr>
+                      <tr><td>XL</td><td>122</td><td>80</td><td>62</td><td>25</td></tr>
+                      <tr><td>XXL</td><td>128</td><td>83</td><td>65</td><td>26</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="pp-accordion-item" role="listitem">
+              <button class="pp-accordion-trigger" aria-expanded="false">
+                Shipping &amp; Returns
+                <span class="pp-accordion-icon" aria-hidden="true"></span>
+              </button>
+              <div class="pp-accordion-body">
+                <div class="pp-accordion-content">
+                  <ul>
+                    <li>Free shipping on orders above ₹2,999</li>
+                    <li>Standard delivery: 4–7 business days</li>
+                    <li>Express delivery: 2–3 business days (₹199)</li>
+                    <li>Free returns within 30 days of delivery</li>
+                    <li>Items must be unworn, unwashed, with original tags</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Service icons -->
+          <div class="pp-services">
+            <div class="pp-service-item">
+              <div class="pp-service-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg></div>
+              <div><div class="pp-service-title">Free Shipping</div><div class="pp-service-text">On orders above ₹2,999</div></div>
+            </div>
+            <div class="pp-service-item">
+              <div class="pp-service-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/></svg></div>
+              <div><div class="pp-service-title">Easy Returns</div><div class="pp-service-text">30-day return policy</div></div>
+            </div>
+            <div class="pp-service-item">
+              <div class="pp-service-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg></div>
+              <div><div class="pp-service-title">Quality Guarantee</div><div class="pp-service-text">Craftsmanship warranty</div></div>
+            </div>
+            <div class="pp-service-item">
+              <div class="pp-service-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zm-9-3.75h.008v.008H12V8.25z"/></svg></div>
+              <div><div class="pp-service-title">Need Help?</div><div class="pp-service-text">Chat with us anytime</div></div>
+            </div>
+          </div>
+
+        </div><!-- /pp-info -->
+      </div><!-- /pp-layout -->
+
+      <!-- ══ RELATED PRODUCTS ══ -->
+      <section class="pp-related" aria-labelledby="related-title">
+        <div class="section-header" style="padding: 0 20px 48px;">
+          <div>
+            <p class="section-eyebrow">You May Also Like</p>
+            <h2 class="section-title" id="related-title">Related <em>Pieces</em></h2>
+          </div>
+          <a href="collection-midnight.html" class="section-link">View Collection</a>
+        </div>
+        <div class="pcp-grid" style="padding: 0 2px;">
+          <article class="pcp-card">
+            <div class="pcp-image-wrap">
+              <img class="pcp-img pcp-img-front" src="product_tshirt_1.jpg" alt="Phantom Tee" loading="lazy" />
+              <img class="pcp-img pcp-img-back" src="product_back_view.jpg" alt="Phantom Tee back" loading="lazy" onerror="this.src='product_tshirt_1.jpg'" />
+              <button class="pcp-wishlist" aria-label="Wishlist"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg></button>
+              <span class="pcp-badge">New</span>
+              <div class="pcp-actions"><div class="pcp-sizes"><button class="pcp-size-btn" data-size="S">S</button><button class="pcp-size-btn selected" data-size="M">M</button><button class="pcp-size-btn" data-size="L">L</button><button class="pcp-size-btn" data-size="XL">XL</button></div><button class="pcp-add-cart" data-add-cart="obsidian-tee" data-size="M" data-color="Off-Black">Add to Cart</button></div>
+            </div>
+            <div class="pcp-info"><h3 class="pcp-name">Phantom Heavyweight Tee</h3><p class="pcp-desc">380 GSM · Pre-Washed · Drop Shoulder</p><div class="pcp-colors"><div class="pcp-color active" style="background:#2d2d2d;" data-color="Off-Black"></div><div class="pcp-color" style="background:#1a1a1a;" data-color="Carbon Black"></div></div><div class="pcp-price-row"><span class="pcp-price">₹2,799</span></div></div>
+          </article>
+          <article class="pcp-card">
+            <div class="pcp-image-wrap">
+              <img class="pcp-img pcp-img-front" src="product_new_arrival_1.jpg" alt="Void Jacket" loading="lazy" />
+              <img class="pcp-img pcp-img-back" src="product_back_view.jpg" alt="Void Jacket back" loading="lazy" onerror="this.src='product_new_arrival_1.jpg'" />
+              <button class="pcp-wishlist" aria-label="Wishlist"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg></button>
+              <div class="pcp-actions"><div class="pcp-sizes"><button class="pcp-size-btn" data-size="S">S</button><button class="pcp-size-btn selected" data-size="M">M</button><button class="pcp-size-btn" data-size="L">L</button></div><button class="pcp-add-cart" data-add-cart="void-jacket" data-size="M" data-color="Obsidian Black">Add to Cart</button></div>
+            </div>
+            <div class="pcp-info"><h3 class="pcp-name">Void Structured Jacket</h3><p class="pcp-desc">Technical Micro-Twill · Structured Shoulder</p><div class="pcp-colors"><div class="pcp-color active" style="background:#111;" data-color="Obsidian Black"></div><div class="pcp-color" style="background:#1a1f2e;" data-color="Dark Navy"></div></div><div class="pcp-price-row"><span class="pcp-price">₹5,999</span><span class="pcp-price-original">₹7,499</span></div></div>
+          </article>
+          <article class="pcp-card">
+            <div class="pcp-image-wrap">
+              <img class="pcp-img pcp-img-front" src="product_shirt_model.jpg" alt="Shadow Linen Shirt" loading="lazy" />
+              <img class="pcp-img pcp-img-back" src="product_back_view.jpg" alt="Shadow Linen Shirt back" loading="lazy" onerror="this.src='product_shirt_model.jpg'" />
+              <button class="pcp-wishlist" aria-label="Wishlist"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg></button>
+              <div class="pcp-actions"><div class="pcp-sizes"><button class="pcp-size-btn" data-size="S">S</button><button class="pcp-size-btn selected" data-size="M">M</button><button class="pcp-size-btn" data-size="L">L</button><button class="pcp-size-btn" data-size="XL">XL</button></div><button class="pcp-add-cart" data-add-cart="shadow-shirt" data-size="M" data-color="Shadow Charcoal">Add to Cart</button></div>
+            </div>
+            <div class="pcp-info"><h3 class="pcp-name">Shadow Linen Shirt</h3><p class="pcp-desc">100% European Linen · MOP Buttons</p><div class="pcp-colors"><div class="pcp-color active" style="background:#3d3d3d;" data-color="Shadow Charcoal"></div><div class="pcp-color" style="background:#666;" data-color="Slate Grey"></div></div><div class="pcp-price-row"><span class="pcp-price">₹3,299</span></div></div>
+          </article>
+        </div>
+      </section>
+
+    </div><!-- /product-page -->
+
+    <!-- FOOTER -->
+    <footer id="footer" role="contentinfo">
+      <div class="footer-newsletter-strip">
+        <div class="footer-nl-text">
+          <div class="footer-nl-title">Stay in the <em>Dark.</em></div>
+          <p class="footer-nl-sub">New drops. Exclusive access. No noise.</p>
+        </div>
+        <form class="footer-nl-form" onsubmit="return false;"><input type="email" class="footer-nl-input" placeholder="Your email address" aria-label="Email" /><button type="submit" class="footer-nl-btn">Subscribe</button></form>
+      </div>
+      <div style="padding:24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <a href="index.html" style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;letter-spacing:0.35em;color:var(--text);text-transform:uppercase;">ECLIPSE</a>
+        <div class="footer-social-enhanced">
+          <a href="#" aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>Instagram</a>
+          <a href="#" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>Facebook</a>
+          <a href="#" aria-label="Pinterest"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2C6.477 2 2 6.477 2 12c0 4.236 2.636 7.855 6.356 9.312-.088-.791-.167-2.005.035-2.868.181-.78 1.172-4.97 1.172-4.97s-.299-.598-.299-1.482c0-1.388.806-2.428 1.808-2.428.852 0 1.265.64 1.265 1.408 0 .858-.546 2.14-.828 3.33-.236.995.499 1.806 1.476 1.806 1.771 0 3.136-1.867 3.136-4.563 0-2.386-1.715-4.054-4.163-4.054-2.835 0-4.5 2.126-4.5 4.323 0 .856.33 1.772.741 2.274a.3.3 0 0 1 .069.285c-.076.314-.245.995-.278 1.134-.044.183-.146.221-.337.133-1.249-.581-2.03-2.407-2.03-3.874 0-3.154 2.292-6.052 6.608-6.052 3.469 0 6.165 2.473 6.165 5.776 0 3.447-2.173 6.22-5.19 6.22-1.013 0-1.966-.527-2.292-1.148l-.623 2.378c-.226.869-.835 1.958-1.244 2.621.937.29 1.931.446 2.962.446 5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>Pinterest</a>
+        </div>
+      </div>
+      <div class="footer-grid" style="padding:60px 20px 40px;"><div class="footer-brand"><p class="footer-brand-tagline">Premium Men's Fashion. Crafted for the modern man who refuses to be ordinary.</p></div><div><p class="footer-col-title">Collections</p><ul class="footer-links"><li><a href="collection-midnight.html">Midnight Collection</a></li><li><a href="collection-urban.html">Urban Eclipse</a></li><li><a href="collection-silent.html">Silent Luxury</a></li><li><a href="collection-monochrome.html">Monochrome Essentials</a></li></ul></div><div><p class="footer-col-title">Customer Care</p><ul class="footer-links"><li><a href="#">Size Guide</a></li><li><a href="#">Shipping Policy</a></li><li><a href="#">Returns &amp; Exchanges</a></li><li><a href="#">Contact Us</a></li></ul></div><div><p class="footer-col-title">Company</p><ul class="footer-links"><li><a href="#">Our Story</a></li><li><a href="#">Sustainability</a></li><li><a href="#">Careers</a></li></ul></div></div>
+      <div class="footer-bottom"><p class="footer-copyright">© 2025 Eclipse Premium Menswear Pvt. Ltd.</p><nav class="footer-legal" aria-label="Legal"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Returns</a><a href="#">Shipping</a></nav></div>
+    </footer>
+
+  </main>
+
+  <!-- STICKY BUY (mobile) -->
+  <div class="pp-sticky-buy" id="pp-sticky-buy" aria-label="Quick purchase">
+    <div class="pp-sticky-info">
+      <div class="pp-sticky-name">Obsidian Oversized Tee</div>
+      <div class="pp-sticky-price">₹2,499</div>
+    </div>
+    <button class="pp-sticky-btn"
+      data-add-cart="obsidian-tee"
+      data-size="M"
+      data-color="Carbon Black"
+      aria-label="Add to cart">
+      Add to Cart
+    </button>
+  </div>
+
+  <!-- ZOOM OVERLAY -->
+  <div class="pp-zoom-overlay" id="pp-zoom" role="dialog" aria-modal="true" aria-label="Product zoom">
+    <button class="pp-zoom-close" id="pp-zoom-close" aria-label="Close zoom">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+    </button>
+    <img src="product_tshirt_model.jpg" alt="Zoomed product view" />
+  </div>
+
+  <script src="cart.js"></script>
+  <script src="animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Mobile menu + search
+      const hamburger = document.getElementById('hamburger');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const searchBtn = document.getElementById('search-btn');
+      const searchClose = document.getElementById('search-close');
+      const searchOverlay = document.getElementById('search-overlay');
+      if (hamburger && mobileMenu) { hamburger.addEventListener('click', () => { const open = mobileMenu.classList.toggle('open'); hamburger.classList.toggle('open', open); hamburger.setAttribute('aria-expanded', open); document.body.style.overflow = open ? 'hidden' : ''; }); }
+      if (searchBtn) searchBtn.addEventListener('click', () => { searchOverlay?.classList.add('open'); document.body.style.overflow = 'hidden'; setTimeout(() => document.getElementById('search-input')?.focus(), 200); });
+      if (searchClose) searchClose.addEventListener('click', () => { searchOverlay?.classList.remove('open'); document.body.style.overflow = ''; });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { searchOverlay?.classList.remove('open'); mobileMenu?.classList.remove('open'); document.querySelector('.pp-zoom-overlay')?.classList.remove('open'); document.body.style.overflow = ''; } });
+
+      // Wishlist toggle
+      const wishlistBtn = document.getElementById('pp-wishlist-btn');
+      if (wishlistBtn) {
+        wishlistBtn.addEventListener('click', () => {
+          wishlistBtn.classList.toggle('active');
+          const isActive = wishlistBtn.classList.contains('active');
+          wishlistBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="${isActive ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg> ${isActive ? 'Saved to Wishlist' : 'Save to Wishlist'}`;
+        });
+      }
+
+      // Sticky buy: sync selected size/color from pp-sizes
+      const addCartBtn = document.getElementById('pp-add-cart-btn');
+      const stickyBtn  = document.querySelector('.pp-sticky-btn');
+
+      document.querySelectorAll('.pp-size').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sz = btn.dataset.size;
+          if (addCartBtn) addCartBtn.dataset.size = sz;
+          if (stickyBtn)  stickyBtn.dataset.size  = sz;
+        });
+      });
+
+      document.querySelectorAll('.pp-color-swatch').forEach(sw => {
+        sw.addEventListener('click', () => {
+          const col = sw.dataset.color;
+          if (addCartBtn) addCartBtn.dataset.color = col;
+          if (stickyBtn)  stickyBtn.dataset.color  = col;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
