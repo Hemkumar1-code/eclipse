@@ -4,6 +4,12 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from '@studio-freight/lenis'
 
+import { AuthProvider } from './contexts/AuthContext'
+import AdminProtectedRoute from './components/Admin/AdminProtectedRoute'
+import AdminLogin from './pages/Admin/Login'
+
+import AdminLayout from './components/Admin/AdminLayout'
+
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -16,10 +22,18 @@ const Collection = () => <div style={{height: '100vh', display: 'flex', alignIte
 const Product = () => <div style={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px'}}>Product Page Placeholder</div>
 const Checkout = () => <div style={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px'}}>Checkout Page Placeholder</div>
 
+import AdminDashboard from './pages/Admin/Dashboard'
+import AdminHeroBanners from './pages/Admin/HeroBanners'
+
 function App() {
   const location = useLocation()
+  
+  // Disable Lenis and Nav/Footer on Admin routes
+  const isAdminRoute = location.pathname.startsWith('/admin')
 
   useEffect(() => {
+    if (isAdminRoute) return // No smooth scroll in admin panel
+
     // Initialize Lenis
     const lenis = new Lenis({
       duration: 1.2,
@@ -50,21 +64,32 @@ function App() {
       lenis.destroy()
       gsap.ticker.remove(lenis.raf)
     }
-  }, [location.pathname])
+  }, [location.pathname, isAdminRoute])
 
   return (
-    <>
-      <Navbar />
+    <AuthProvider>
+      {!isAdminRoute && <Navbar />}
       <Routes>
+        {/* PUBLIC ROUTES */}
         <Route path="/" element={<Home />} />
         <Route path="/collection/:slug" element={<Collection />} />
         <Route path="/product/:id" element={<Product />} />
         <Route path="/checkout" element={<Checkout />} />
+        
+        {/* ADMIN ROUTES */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminProtectedRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="hero-banners" element={<AdminHeroBanners />} />
+          </Route>
+        </Route>
+
         {/* Catch-all route for 404 Not Found */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <Footer />
-    </>
+      {!isAdminRoute && <Footer />}
+    </AuthProvider>
   )
 }
 
