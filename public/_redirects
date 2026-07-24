@@ -1,0 +1,6 @@
+/* 
+  _redirects
+  This file configures Netlify, Cloudflare Pages, and other static hosts
+  to rewrite all requests to index.html for React Router to handle.
+*/
+/* /index.html 200

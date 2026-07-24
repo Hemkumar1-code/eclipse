@@ -7,11 +7,14 @@ import Lenis from '@studio-freight/lenis'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
+import NotFound from './pages/NotFound'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// Placeholder for later phases
+// Placeholders for later phases
 const Collection = () => <div style={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px'}}>Collection Page Placeholder</div>
+const Product = () => <div style={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px'}}>Product Page Placeholder</div>
+const Checkout = () => <div style={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px'}}>Checkout Page Placeholder</div>
 
 function App() {
   const location = useLocation()
@@ -55,6 +58,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/collection/:slug" element={<Collection />} />
+        <Route path="/product/:id" element={<Product />} />
+        <Route path="/checkout" element={<Checkout />} />
+        {/* Catch-all route for 404 Not Found */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
     </>
