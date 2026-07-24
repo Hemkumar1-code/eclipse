@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Plus, Edit2, Trash2, PackageSearch } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
 export default function HeroBanners() {
   const [banners, setBanners] = useState([])
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchBanners()
@@ -46,6 +48,7 @@ export default function HeroBanners() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <h2 style={{ fontSize: '24px', fontWeight: 300, letterSpacing: '0.1em' }}>Hero Banners</h2>
         <button 
+          onClick={() => navigate('/admin/hero-banners/new')}
           style={{ 
             backgroundColor: '#fff', 
             color: '#000', 
@@ -99,7 +102,7 @@ export default function HeroBanners() {
                     <PackageSearch size={14} />
                     Products
                   </button>
-                  <button style={{ backgroundColor: '#1A1A1A', border: '1px solid #333', color: '#fff', padding: '10px', borderRadius: '4px', cursor: 'pointer', transition: 'background 0.2s' }}>
+                  <button onClick={() => navigate(`/admin/hero-banners/${banner.id}`)} style={{ backgroundColor: '#1A1A1A', border: '1px solid #333', color: '#fff', padding: '10px', borderRadius: '4px', cursor: 'pointer', transition: 'background 0.2s' }}>
                     <Edit2 size={14} />
                   </button>
                   <button onClick={() => handleDelete(banner.id)} style={{ backgroundColor: 'rgba(255, 61, 0, 0.1)', border: '1px solid rgba(255, 61, 0, 0.3)', color: '#ff3d00', padding: '10px', borderRadius: '4px', cursor: 'pointer', transition: 'background 0.2s' }}>

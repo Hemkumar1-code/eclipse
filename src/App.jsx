@@ -24,6 +24,9 @@ const Checkout = () => <div style={{height: '100vh', display: 'flex', alignItems
 
 import AdminDashboard from './pages/Admin/Dashboard'
 import AdminHeroBanners from './pages/Admin/HeroBanners'
+import AdminHeroBannerForm from './pages/Admin/HeroBannerForm'
+import AdminProducts from './pages/Admin/Products'
+import AdminProductForm from './pages/Admin/ProductForm'
 
 function App() {
   const location = useLocation()
@@ -82,6 +85,11 @@ function App() {
           <Route element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="hero-banners" element={<AdminHeroBanners />} />
+            <Route path="hero-banners/new" element={<AdminHeroBannerForm />} />
+            <Route path="hero-banners/:id" element={<AdminHeroBannerForm />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="products/new" element={<AdminProductForm />} />
+            <Route path="products/:id" element={<AdminProductForm />} />
           </Route>
         </Route>
 
