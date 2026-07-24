@@ -42,10 +42,10 @@
 }
 
 .intro-text p {
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 300;
-  line-height: 1.9;
+  font-family: "Great Vibes", "Edwardian Script ITC", "Apple Chancery", "URW Chancery L", cursive;
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 400;
+  line-height: 1.4;
   color: var(--text-muted);
   letter-spacing: 0.05em;
 }

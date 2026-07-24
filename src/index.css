@@ -10,7 +10,7 @@
   --border: #1F1F1F;
   --nav-height: 64px;
 
-  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-display: "Sorts Mill Goudy", "Goudy Old Style", "Times New Roman", Georgia, serif;
   --font-body: 'Inter', system-ui, sans-serif;
   --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
 }
