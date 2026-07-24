@@ -14,6 +14,8 @@ export default function Home() {
       const navLogo = document.querySelector('#nav-logo')
       const introLogo = document.querySelector('.intro-logo')
       
+      if (!navLogo || !introLogo) return // Prevent crash if elements are missing
+
       // Hide nav logo initially
       gsap.set(navLogo, { opacity: 0 })
 

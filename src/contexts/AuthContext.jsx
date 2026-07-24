@@ -17,6 +17,9 @@ export const AuthProvider = ({ children }) => {
       } else {
         setLoading(false)
       }
+    }).catch(err => {
+      console.warn('Supabase Auth error (likely missing credentials):', err)
+      setLoading(false)
     })
 
     // Listen for auth changes
