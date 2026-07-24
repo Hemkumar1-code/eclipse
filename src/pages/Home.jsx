@@ -1,14 +1,42 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { supabase } from '../lib/supabase'
 import './Home.css'
 
 export default function Home() {
   const introRef = useRef(null)
   const bannersRef = useRef([])
+  const [banners, setBanners] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    async function fetchBanners() {
+      try {
+        const { data, error } = await supabase
+          .from('hero_banners')
+          .select('*, collections(slug)')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true })
+        
+        if (error) throw error
+        setBanners(data || [])
+      } catch (err) {
+        console.error("Error fetching banners:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchBanners()
+  }, [])
+
+  useEffect(() => {
+    if (loading) return // Don't setup GSAP until banners are loaded
+
+    // Reset bannersRef because we re-render dynamically
+    bannersRef.current = bannersRef.current.slice(0, banners.length)
+
     // ScrollTrigger needs to know about window resizes
     let ctx = gsap.context(() => {
       const navLogo = document.querySelector('#nav-logo')
@@ -57,7 +85,8 @@ export default function Home() {
         .set('.intro-logo', { opacity: 0 })
 
       // Banner Reveals
-      bannersRef.current.forEach((banner, i) => {
+      bannersRef.current.forEach((banner) => {
+        if (!banner) return
         gsap.fromTo(banner.querySelector('.hb-image img'), 
           { scale: 1.15, transformOrigin: 'center top' },
           {
@@ -93,7 +122,7 @@ export default function Home() {
       ctx.revert() // Cleanup GSAP animations on unmount
       gsap.set('#nav-logo', { opacity: 1 }) // Ensure nav logo is visible if leaving page
     }
-  }, [])
+  }, [loading, banners])
 
   const addToRefs = (el) => {
     if (el && !bannersRef.current.includes(el)) {
@@ -116,57 +145,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. HERO BANNER 1 */}
-      <Link to="/collection/midnight" className="hero-banner" ref={addToRefs}>
-        <div className="hb-image">
-          <img src="/banner_midnight.jpg" alt="Midnight Collection" />
-        </div>
-        <div className="hb-overlay"></div>
-        <div className="hb-content">
-          <p className="hb-eyebrow">Collection 01</p>
-          <h2 className="hb-title">Midnight <em>Collection</em></h2>
-          <p className="hb-subtitle">Own the Darkness.</p>
-        </div>
-      </Link>
-
-      {/* 3. HERO BANNER 2 */}
-      <Link to="/collection/urban" className="hero-banner" ref={addToRefs}>
-        <div className="hb-image">
-          <img src="/banner_urban.jpg" alt="Urban Eclipse" />
-        </div>
-        <div className="hb-overlay"></div>
-        <div className="hb-content">
-          <p className="hb-eyebrow">Collection 02</p>
-          <h2 className="hb-title">Urban <em>Eclipse</em></h2>
-          <p className="hb-subtitle">Street Luxury Redefined.</p>
-        </div>
-      </Link>
-
-      {/* 4. HERO BANNER 3 */}
-      <Link to="/collection/silent-luxury" className="hero-banner" ref={addToRefs}>
-        <div className="hb-image">
-          <img src="/banner_silent.jpg" alt="Silent Luxury" />
-        </div>
-        <div className="hb-overlay"></div>
-        <div className="hb-content">
-          <p className="hb-eyebrow">Collection 03</p>
-          <h2 className="hb-title">Silent <em>Luxury</em></h2>
-          <p className="hb-subtitle">Elegance Without Noise.</p>
-        </div>
-      </Link>
-
-      {/* 5. HERO BANNER 4 */}
-      <Link to="/collection/monochrome-essentials" className="hero-banner" ref={addToRefs}>
-        <div className="hb-image">
-          <img src="/banner_monochrome.jpg" alt="Monochrome Essentials" />
-        </div>
-        <div className="hb-overlay"></div>
-        <div className="hb-content">
-          <p className="hb-eyebrow">Collection 04</p>
-          <h2 className="hb-title">Monochrome <em>Essentials</em></h2>
-          <p className="hb-subtitle">Luxury In Simplicity.</p>
-        </div>
-      </Link>
+      {/* DYNAMIC HERO BANNERS */}
+      {!loading && banners.map((banner, index) => (
+        <Link 
+          key={banner.id} 
+          to={banner.collections?.slug ? `/collection/${banner.collections.slug}` : '#'} 
+          className="hero-banner" 
+          ref={addToRefs}
+        >
+          <div className="hb-image">
+            {/* We default to desktop, a real app might use <picture> or standard resize observer */}
+            <img src={banner.desktop_image_url} alt={banner.title} />
+          </div>
+          <div className="hb-overlay"></div>
+          <div className="hb-content">
+            <p className="hb-eyebrow">Collection 0{index + 1}</p>
+            <h2 className="hb-title" dangerouslySetInnerHTML={{ __html: banner.title.replace(/ (.+)$/, ' <em>$1</em>') }}></h2>
+            {banner.subtitle && <p className="hb-subtitle">{banner.subtitle}</p>}
+          </div>
+        </Link>
+      ))}
 
     </div>
   )

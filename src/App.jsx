@@ -17,9 +17,8 @@ import NotFound from './pages/NotFound'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// Placeholders for later phases
-const Collection = () => <div style={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px'}}>Collection Page Placeholder</div>
-const Product = () => <div style={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px'}}>Product Page Placeholder</div>
+import Collection from './pages/Collection'
+import Product from './pages/Product'
 const Checkout = () => <div style={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px'}}>Checkout Page Placeholder</div>
 
 import AdminDashboard from './pages/Admin/Dashboard'
