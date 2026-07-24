@@ -22,9 +22,10 @@ export default function Home() {
         scrollTrigger: {
           trigger: '.intro-section',
           start: 'top top',
-          end: '+=150%',
+          end: '+=100%',
           scrub: 1,
           pin: true,
+          pinSpacing: false,
           invalidateOnRefresh: true,
         }
       })
