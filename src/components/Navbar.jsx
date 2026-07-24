@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Search, ShoppingBag, Heart, Menu, X, User } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useCart } from '../contexts/CartContext'
 import './Navbar.css'
 
 export default function Navbar() {
   const location = useLocation()
   const isHome = location.pathname === '/'
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { cartItems, setIsCartOpen } = useCart()
+  
+  const totalCartItems = cartItems.reduce((acc, item) => acc + item.quantity, 0)
 
   // Prevent body scrolling when mobile menu is open
   useEffect(() => {
@@ -16,8 +20,17 @@ export default function Navbar() {
     } else {
       document.body.style.overflow = ''
     }
+
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+
     return () => {
       document.body.style.overflow = ''
+      window.removeEventListener('resize', handleResize)
     }
   }, [isMobileMenuOpen])
 
@@ -53,7 +66,14 @@ export default function Navbar() {
           <div className="nav-icons">
             <button className="nav-icon-btn" aria-label="Search"><Search size={18} /></button>
             <button className="nav-icon-btn" aria-label="Wishlist"><Heart size={18} /></button>
-            <button className="nav-icon-btn" aria-label="Cart"><ShoppingBag size={18} /></button>
+            <button className="nav-icon-btn" aria-label="Cart" style={{position: 'relative'}} onClick={() => setIsCartOpen(true)}>
+              <ShoppingBag size={18} />
+              {totalCartItems > 0 && (
+                <span style={{ position: 'absolute', top: -5, right: -5, background: 'var(--text)', color: 'var(--bg)', fontSize: '9px', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {totalCartItems}
+                </span>
+              )}
+            </button>
             <button 
               className="hamburger" 
               aria-label="Menu"
@@ -111,7 +131,9 @@ export default function Navbar() {
 
                 <div className="mobile-nav-footer">
                   <Link to="/wishlist" onClick={closeMenu}><Heart size={16} /> Wishlist</Link>
-                  <Link to="/cart" onClick={closeMenu}><ShoppingBag size={16} /> Cart</Link>
+                  <button onClick={() => { setIsCartOpen(true); closeMenu(); }} style={{background: 'none', border: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit', padding: 0}}>
+                    <ShoppingBag size={16} /> Cart
+                  </button>
                   <Link to="/admin/login" onClick={closeMenu}><User size={16} /> Login</Link>
                 </div>
               </div>

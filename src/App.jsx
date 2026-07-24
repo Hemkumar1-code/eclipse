@@ -5,12 +5,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from '@studio-freight/lenis'
 
 import { AuthProvider } from './contexts/AuthContext'
+import { CartProvider } from './contexts/CartContext'
 import AdminProtectedRoute from './components/Admin/AdminProtectedRoute'
 import AdminLogin from './pages/Admin/Login'
 
 import AdminLayout from './components/Admin/AdminLayout'
 
 import Navbar from './components/Navbar'
+import CartDrawer from './components/CartDrawer'
 import Footer from './components/Footer'
 import Home from './pages/Home'
 import NotFound from './pages/NotFound'
@@ -19,7 +21,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 import Collection from './pages/Collection'
 import Product from './pages/Product'
-const Checkout = () => <div style={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px'}}>Checkout Page Placeholder</div>
+import Checkout from './pages/Checkout'
 
 import AdminDashboard from './pages/Admin/Dashboard'
 import AdminHeroBanners from './pages/Admin/HeroBanners'
@@ -70,32 +72,35 @@ function App() {
 
   return (
     <AuthProvider>
-      {!isAdminRoute && <Navbar />}
-      <Routes>
-        {/* PUBLIC ROUTES */}
-        <Route path="/" element={<Home />} />
-        <Route path="/collection/:slug" element={<Collection />} />
-        <Route path="/product/:id" element={<Product />} />
-        <Route path="/checkout" element={<Checkout />} />
-        
-        {/* ADMIN ROUTES */}
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<AdminProtectedRoute />}>
-          <Route element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="hero-banners" element={<AdminHeroBanners />} />
-            <Route path="hero-banners/new" element={<AdminHeroBannerForm />} />
-            <Route path="hero-banners/:id" element={<AdminHeroBannerForm />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="products/new" element={<AdminProductForm />} />
-            <Route path="products/:id" element={<AdminProductForm />} />
+      <CartProvider>
+        {!isAdminRoute && <Navbar />}
+        {!isAdminRoute && <CartDrawer />}
+        <Routes>
+          {/* PUBLIC ROUTES */}
+          <Route path="/" element={<Home />} />
+          <Route path="/collection/:slug" element={<Collection />} />
+          <Route path="/product/:id" element={<Product />} />
+          <Route path="/checkout" element={<Checkout />} />
+          
+          {/* ADMIN ROUTES */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminProtectedRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="hero-banners" element={<AdminHeroBanners />} />
+              <Route path="hero-banners/new" element={<AdminHeroBannerForm />} />
+              <Route path="hero-banners/:id" element={<AdminHeroBannerForm />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="products/new" element={<AdminProductForm />} />
+              <Route path="products/:id" element={<AdminProductForm />} />
+            </Route>
           </Route>
-        </Route>
 
-        {/* Catch-all route for 404 Not Found */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      {!isAdminRoute && <Footer />}
+          {/* Catch-all route for 404 Not Found */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        {!isAdminRoute && <Footer />}
+      </CartProvider>
     </AuthProvider>
   )
 }

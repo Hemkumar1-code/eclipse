@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useCart } from '../contexts/CartContext'
 import './Product.css'
 
 export default function Product() {
@@ -14,6 +15,8 @@ export default function Product() {
 
   const [selectedColor, setSelectedColor] = useState('')
   const [selectedSize, setSelectedSize] = useState('')
+
+  const { addToCart } = useCart()
 
   useEffect(() => {
     async function fetchProduct() {
@@ -87,9 +90,7 @@ export default function Product() {
 
   const handleAddToCart = () => {
     if (!selectedVariant) return
-    console.log("Adding to cart:", selectedVariant.id)
-    // Add to cart logic will go here
-    alert('Added to cart!')
+    addToCart(selectedVariant, 1)
   }
 
   if (loading) return <div className="loading-state">Loading...</div>
@@ -172,10 +173,16 @@ export default function Product() {
 
           <button 
             className="pd-add-to-cart"
-            disabled={!selectedVariant || selectedVariant.stock <= 0}
+            disabled={variants.length === 0 || !selectedVariant || selectedVariant.stock <= 0}
             onClick={handleAddToCart}
           >
-            {!selectedVariant ? 'Select Options' : selectedVariant.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+            {variants.length === 0 
+              ? 'Currently Unavailable' 
+              : !selectedVariant 
+                ? 'Select Options' 
+                : selectedVariant.stock <= 0 
+                  ? 'Out of Stock' 
+                  : 'Add to Cart'}
           </button>
 
           {product.fabric && (
