@@ -13,8 +13,13 @@ export default function AdminProtectedRoute() {
     )
   }
 
-  if (!user || !isAdmin) {
+  if (!user) {
     return <Navigate to="/admin/login" replace />
+  }
+
+  if (!isAdmin) {
+    // If a normal customer accidentally ends up here, bounce them to the homepage
+    return <Navigate to="/" replace />
   }
 
   return <Outlet />

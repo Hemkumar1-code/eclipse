@@ -12,9 +12,13 @@ export default function Login() {
   const navigate = useNavigate()
   const { user, isAdmin } = useAuth()
 
-  // If already logged in and admin, go to dashboard
-  if (user && isAdmin) {
-    return <Navigate to="/admin" replace />
+  // If already logged in
+  if (user) {
+    if (isAdmin) {
+      return <Navigate to="/admin" replace />
+    } else {
+      return <Navigate to="/" replace />
+    }
   }
 
   const handleLogin = async (e) => {
@@ -30,8 +34,21 @@ export default function Login() {
 
       if (error) throw error
 
-      // Role check happens in AuthContext and ProtectedRoute
-      navigate('/admin')
+      // Verify role immediately
+      const { data: roleData, error: roleError } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', data.user.id)
+        .single()
+      
+      const role = roleData?.role ?? 'Customer'
+
+      if (['Admin', 'Manager', 'Super Admin'].includes(role)) {
+        navigate('/admin')
+      } else {
+        await supabase.auth.signOut()
+        throw new Error("Access Denied: You do not have administrator privileges.")
+      }
     } catch (err) {
       setError(err.message)
     } finally {
