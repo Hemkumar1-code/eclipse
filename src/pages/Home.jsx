@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { supabase } from '../lib/supabase'
+import HomeProductSections from '../components/HomeProductSections'
 import './Home.css'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export default function Home() {
   const introRef = useRef(null)
@@ -11,6 +14,7 @@ export default function Home() {
   const [banners, setBanners] = useState([])
   const [loading, setLoading] = useState(true)
 
+  // ── Fetch hero banners ──────────────────────────────────────────────────
   useEffect(() => {
     async function fetchBanners() {
       try {
@@ -19,11 +23,10 @@ export default function Home() {
           .select('*, collections(slug)')
           .eq('is_active', true)
           .order('display_order', { ascending: true })
-        
         if (error) throw error
         setBanners(data || [])
       } catch (err) {
-        console.error("Error fetching banners:", err)
+        console.error('Error fetching banners:', err)
       } finally {
         setLoading(false)
       }
@@ -31,96 +34,200 @@ export default function Home() {
     fetchBanners()
   }, [])
 
+  // ── GSAP animations (runs after banners are loaded) ────────────────────
   useEffect(() => {
-    if (loading) return // Don't setup GSAP until banners are loaded
+    if (loading) return
 
-    // Reset bannersRef because we re-render dynamically
     bannersRef.current = bannersRef.current.slice(0, banners.length)
 
-    // ScrollTrigger needs to know about window resizes
-    let ctx = gsap.context(() => {
-      const navLogo = document.querySelector('#nav-logo')
-      const introLogo = document.querySelector('.intro-logo')
-      
-      if (!navLogo || !introLogo) return // Prevent crash if elements are missing
+    const navLogo = document.querySelector('#nav-logo')
+    const introLogo = document.querySelector('.intro-logo')
+    if (!navLogo || !introLogo) return
 
-      // Hide nav logo initially
-      gsap.set(navLogo, { opacity: 0 })
+    // ─────────────────────────────────────────────────────────────────────
+    // STEP 1 — Transfer position ownership from CSS to GSAP
+    //
+    // ROOT CAUSE OF LOGO JUMP:
+    //   The CSS has  top:50%; left:50%; transform:translate(-50%,-50%)
+    //   When GSAP reads the element it sees xPercent:-50, yPercent:-50.
+    //   The tween target sets xPercent:0, yPercent:0 — which shifts the
+    //   logo right/down by 50% of its own size AS A SEPARATE MOTION while
+    //   top/left are also animating. This creates the visible jump.
+    //
+    // FIX:
+    //   Read the *rendered* pixel position via getBoundingClientRect()
+    //   (which already accounts for the CSS translate) and hand those
+    //   pixel values to GSAP. GSAP inline styles override CSS styles, so
+    //   setting x:0, y:0, xPercent:0, yPercent:0 clears GSAP's internal
+    //   translate and the element stays visually where it was. After this
+    //   call GSAP is the sole owner of the element's position. No CSS vs
+    //   GSAP conflict is possible.
+    // ─────────────────────────────────────────────────────────────────────
+    const initialBcr = introLogo.getBoundingClientRect()
+    gsap.set(introLogo, {
+      // Pixel position of the rendered center — EXACTLY where CSS put it
+      top: initialBcr.top,
+      left: initialBcr.left,
+      // Zero out GSAP's own transform so it doesn't fight the CSS transform
+      x: 0,
+      y: 0,
+      xPercent: 0,
+      yPercent: 0,
+    })
 
-      // Intro Animation Timeline
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: '.intro-section',
-          start: 'top top',
-          end: '+=100%',
-          scrub: 1,
-          pin: true,
-          pinSpacing: false,
-          invalidateOnRefresh: true,
-        }
-      })
+    // ─────────────────────────────────────────────────────────────────────
+    // STEP 2 — Hide nav logo (revealed atomically at animation end)
+    // ─────────────────────────────────────────────────────────────────────
+    gsap.set(navLogo, { opacity: 0 })
 
-      tl.to('.intro-text', { opacity: 0, y: -30, duration: 0.3 }, 0)
-        .to('.scroll-indicator', { opacity: 0, duration: 0.2 }, 0)
-        .to('.intro-logo', {
-          top: () => {
-            const rect = navLogo.getBoundingClientRect()
-            return rect.top
+    // ─────────────────────────────────────────────────────────────────────
+    // STEP 3 — Helper: compute centered pixel position (for onRefresh)
+    // ─────────────────────────────────────────────────────────────────────
+    function centeredLogoPosition() {
+      const logoW = introLogo.offsetWidth
+      const logoH = introLogo.offsetHeight
+      return {
+        top: (window.innerHeight - logoH) / 2,
+        left: (window.innerWidth - logoW) / 2,
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // STEP 4 — matchMedia for mobile vs desktop differences
+    // ─────────────────────────────────────────────────────────────────────
+    const mm = gsap.matchMedia()
+
+    mm.add(
+      {
+        isDesktop: '(min-width: 768px)',
+        isMobile: '(max-width: 767px)',
+      },
+      (context) => {
+        const { isDesktop } = context.conditions
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            id: 'intro-pin',
+            trigger: '.intro-section',
+            start: 'top top',
+            end: '+=100%',
+            scrub: 1,
+            pin: true,
+            // ─────────────────────────────────────────────────────────
+            // pinSpacing: true (default)
+            //   GSAP inserts a spacer div whose height = scroll distance.
+            //   This keeps the document flow intact so the first hero
+            //   banner appears immediately after the intro pin releases.
+            //   Setting it to false would require a second scroll to
+            //   reach the hero banner (the "extra black screen" bug).
+            // ─────────────────────────────────────────────────────────
+            pinSpacing: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            // ─────────────────────────────────────────────────────────
+            // onRefresh — called AFTER ScrollTrigger.refresh() finishes.
+            // DO NOT call ScrollTrigger.refresh() from inside here.
+            // That caused an infinite refresh loop which corrupted the
+            // pin spacer height calculation, creating the black gap.
+            // ─────────────────────────────────────────────────────────
+            onRefresh() {
+              // Only reset the intro logo position if the animation
+              // hasn't started yet (progress === 0 means at the top)
+              const trigger = ScrollTrigger.getById('intro-pin')
+              if (trigger && trigger.progress < 0.05) {
+                const pos = centeredLogoPosition()
+                gsap.set(introLogo, { top: pos.top, left: pos.left })
+              }
+            },
           },
-          left: () => {
-            const rect = navLogo.getBoundingClientRect()
-            return rect.left
-          },
-          x: 0,
-          y: 0,
-          xPercent: 0,
-          yPercent: 0,
-          fontSize: () => window.getComputedStyle(navLogo).fontSize,
-          letterSpacing: () => window.getComputedStyle(navLogo).letterSpacing,
-          color: 'var(--text)',
-          duration: 1,
-          ease: 'power3.inOut'
-        }, 0)
-        .set(navLogo, { opacity: 1 })
-        .set('.intro-logo', { opacity: 0 })
+        })
 
-      // Banner Reveals
-      bannersRef.current.forEach((banner) => {
-        if (!banner) return
-        gsap.fromTo(banner.querySelector('.hb-image img'), 
-          { scale: 1.15, transformOrigin: 'center top' },
-          {
-            scale: 1,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: banner,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: true
-            }
-          }
-        )
+        tl
+          // ── Fade out story text ──────────────────────────────────────
+          .to('.intro-text', {
+            opacity: 0,
+            y: isDesktop ? -30 : -20,
+            duration: 0.3,
+          }, 0)
 
-        gsap.fromTo(banner.querySelector('.hb-content'),
-          { opacity: 0, y: 50 },
-          {
-            opacity: 1, 
-            y: 0,
+          // ── Fade out scroll indicator ────────────────────────────────
+          .to('.scroll-indicator', { opacity: 0, duration: 0.2 }, 0)
+
+          // ── Fly logo up to navbar ────────────────────────────────────
+          //
+          // We animate ONLY top, left, fontSize, letterSpacing, color.
+          // x/y/xPercent/yPercent stay at 0 (already set in STEP 1).
+          // Both start and end values are in px — no unit mismatch.
+          // This prevents the "slide + scale" jump seen when mixing
+          // CSS %-based transforms with GSAP pixel-based animation.
+          // ─────────────────────────────────────────────────────────────
+          .to('.intro-logo', {
             duration: 1,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: banner,
-              start: 'top 60%',
-            }
-          }
-        )
-      })
+            ease: 'power3.inOut',
+            top: () => {
+              const r = navLogo.getBoundingClientRect()
+              // Vertically centre the intro-logo within the nav bar slot
+              return r.top + (r.height - introLogo.offsetHeight) / 2
+            },
+            left: () => navLogo.getBoundingClientRect().left,
+            fontSize: () => window.getComputedStyle(navLogo).fontSize,
+            letterSpacing: () => window.getComputedStyle(navLogo).letterSpacing,
+            color: 'var(--text)',
+          }, 0)
 
-    }, introRef) // Scope to introRef for cleanup
+          // ── Atomic swap: show real nav logo, hide intro logo ─────────
+          .set(navLogo, { opacity: 1 })
+          .set('.intro-logo', { opacity: 0 })
+
+        // ── Hero banner parallax ──────────────────────────────────────
+        bannersRef.current.forEach((banner) => {
+          if (!banner) return
+          const img = banner.querySelector('.hb-image img')
+          const content = banner.querySelector('.hb-content')
+
+          if (img) {
+            gsap.fromTo(img,
+              { scale: 1.15, transformOrigin: 'center top' },
+              {
+                scale: 1,
+                ease: 'none',
+                scrollTrigger: {
+                  trigger: banner,
+                  start: 'top bottom',
+                  end: 'bottom top',
+                  scrub: true,
+                },
+              }
+            )
+          }
+
+          if (content) {
+            gsap.fromTo(content,
+              { opacity: 0, y: 50 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                  trigger: banner,
+                  start: 'top 60%',
+                },
+              }
+            )
+          }
+        })
+
+        return () => { /* mm.revert() below handles all cleanup */ }
+      }
+    )
 
     return () => {
-      ctx.revert() // Cleanup GSAP animations on unmount
-      gsap.set('#nav-logo', { opacity: 1 }) // Ensure nav logo is visible if leaving page
+      mm.revert()
+      // Restore nav logo for pages other than Home
+      gsap.set('#nav-logo', { clearProps: 'all' })
+      // Remove all GSAP inline styles from the intro logo (restores CSS)
+      gsap.set('.intro-logo', { clearProps: 'all' })
     }
   }, [loading, banners])
 
@@ -132,12 +239,15 @@ export default function Home() {
 
   return (
     <div className="home-wrapper" ref={introRef}>
-      
-      {/* 1. OPENING INTRO */}
+
+      {/* ── INTRO SECTION ─────────────────────────────── */}
       <section className="intro-section">
         <div className="intro-logo">ECLIPSE</div>
         <div className="intro-text">
-          <p>Eclipse was born from a singular belief —<br/>that true style exists in the space between light and shadow.</p>
+          <p>
+            Eclipse was born from a singular belief —<br />
+            that true style exists in the space between light and shadow.
+          </p>
         </div>
         <div className="scroll-indicator">
           <span>Scroll</span>
@@ -145,26 +255,37 @@ export default function Home() {
         </div>
       </section>
 
-      {/* DYNAMIC HERO BANNERS */}
+      {/* ── DYNAMIC HERO BANNERS ──────────────────────── */}
       {!loading && banners.map((banner, index) => (
-        <Link 
-          key={banner.id} 
-          to={banner.collections?.slug ? `/collection/${banner.collections.slug}` : '#'} 
-          className="hero-banner" 
+        <Link
+          key={banner.id}
+          to={banner.collections?.slug ? `/collection/${banner.collections.slug}` : '#'}
+          className="hero-banner"
           ref={addToRefs}
         >
           <div className="hb-image">
-            {/* We default to desktop, a real app might use <picture> or standard resize observer */}
-            <img src={banner.desktop_image_url} alt={banner.title} />
+            <img
+              src={banner.desktop_image_url}
+              alt={banner.title}
+              loading={index === 0 ? 'eager' : 'lazy'}
+            />
           </div>
           <div className="hb-overlay"></div>
           <div className="hb-content">
             <p className="hb-eyebrow">Collection 0{index + 1}</p>
-            <h2 className="hb-title" dangerouslySetInnerHTML={{ __html: banner.title.replace(/ (.+)$/, ' <em>$1</em>') }}></h2>
+            <h2
+              className="hb-title"
+              dangerouslySetInnerHTML={{
+                __html: banner.title.replace(/ (.+)$/, ' <em>$1</em>'),
+              }}
+            ></h2>
             {banner.subtitle && <p className="hb-subtitle">{banner.subtitle}</p>}
           </div>
         </Link>
       ))}
+
+      {/* ── PRODUCT SECTIONS ──────────────────────────── */}
+      <HomeProductSections />
 
     </div>
   )

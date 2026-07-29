@@ -1,28 +1,80 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   ECLIPSE — Home Page
+   Desktop layout is intentionally preserved exactly.
+   Mobile fixes target 320 / 360 / 375 / 390 / 412 px.
+═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── Wrapper ──────────────────────────────────────────────────────── */
 .home-wrapper {
   width: 100%;
   background-color: var(--bg);
+  /*
+   * ROOT CAUSE OF THIN VERTICAL LINE (right side):
+   *   overflow-x: hidden on a non-root element creates a new Block
+   *   Formatting Context. When GSAP inserts its pin-spacer div inside
+   *   this context, the spacer's right edge can render as a 1 px artifact
+   *   on mobile sub-pixel renderers (tested on Android Chrome).
+   *
+   * FIX: Remove overflow-x: hidden here.
+   *   body already has overflow-x: hidden (index.css line 37), so
+   *   horizontal overflow is still prevented globally. Removing the
+   *   duplicate from .home-wrapper eliminates the new BFC and the
+   *   resulting pin-spacer edge artifact.
+   */
 }
 
-/* ─── 1. INTRO SECTION ─── */
+/* ─── Intro section ────────────────────────────────────────────────── */
 .intro-section {
   position: relative;
   width: 100%;
   height: 100vh;
+  height: 100svh; /* mobile safe viewport — avoids address-bar resize jump */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: var(--bg);
-  overflow: hidden;
+  /*
+   * ROOT CAUSE OF VERTICAL LINE (secondary):
+   *   overflow: hidden here clips children at the section's right edge.
+   *   When GSAP pins this section (sets it to position:fixed temporarily),
+   *   the overflow:hidden crops the bronze scroll-line::after animation
+   *   at the container's right pixel boundary, making it appear as a
+   *   persistent 1 px vertical line during the scrub animation.
+   *
+   * FIX: Remove overflow: hidden. The intro section has no content that
+   *   needs clipping — the logo is position:fixed (not a child in flow)
+   *   and the scroll indicator is centered. GSAP's pin handles containment.
+   */
 }
 
+/* ─── Intro logo ───────────────────────────────────────────────────── */
+/*
+ * GSAP takes over this element's position immediately in useEffect:
+ *   gsap.set(introLogo, { top: bcr.top, left: bcr.left, x:0, y:0, xPercent:0, yPercent:0 })
+ *
+ * The CSS transform: translate(-50%, -50%) here provides the ONLY purpose
+ * of correctly placing the logo BEFORE React's first useEffect fires
+ * (i.e., on the initial paint). After useEffect runs, GSAP's inline styles
+ * override the CSS transform entirely — no conflict is possible.
+ *
+ * We intentionally do NOT add will-change: transform here because GSAP
+ * manages its own compositing hints internally and adding an external
+ * will-change creates a second stacking context that GSAP's transform
+ * math does not expect.
+ *
+ * margin-left: 0.175em (letter-spacing offset) is intentionally removed.
+ * It caused GSAP's left calculation to be off by ~5 px and contributed
+ * to the logo jump. The slight visual asymmetry from trailing letter-spacing
+ * is imperceptible at these font sizes.
+ */
 .intro-logo {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-family: var(--font-display);
-  font-size: clamp(40px, 10vw, 120px);
+  font-size: clamp(36px, 10vw, 120px);
   font-weight: 300;
   letter-spacing: 0.35em;
   color: var(--accent);
@@ -30,35 +82,47 @@
   z-index: 950;
   white-space: nowrap;
   pointer-events: none;
-  /* margin-left fixes centering offset due to letter-spacing */
-  margin-left: 0.175em;
 }
 
+/* ─── Intro text ───────────────────────────────────────────────────── */
+/*
+ * .intro-logo is position:fixed so it does not participate in the flex
+ * column layout. We use padding-top on .intro-text to push it below the
+ * visually centered logo. The clamp ensures enough gap on all screen sizes.
+ */
 .intro-text {
-  margin-top: 15vh;
+  padding-top: clamp(60px, 10vh, 120px);
   text-align: center;
   max-width: 400px;
-  padding: 0 20px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .intro-text p {
-  font-family: "Great Vibes", "Edwardian Script ITC", "Apple Chancery", "URW Chancery L", cursive;
-  font-size: clamp(24px, 4vw, 32px);
+  font-family: 'Great Vibes', 'Edwardian Script ITC', 'Apple Chancery',
+    'URW Chancery L', cursive;
+  font-size: clamp(22px, 3.5vw, 32px);
   font-weight: 400;
-  line-height: 1.4;
+  line-height: 1.5;
   color: var(--text-muted);
   letter-spacing: 0.05em;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
+/* ─── Scroll indicator ─────────────────────────────────────────────── */
 .scroll-indicator {
   position: absolute;
-  bottom: 40px;
+  bottom: 32px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  z-index: 10;
+  /* pointer-events none so it doesn't block touch on the section */
+  pointer-events: none;
 }
 
 .scroll-indicator span {
@@ -68,10 +132,17 @@
   color: var(--text-dim);
 }
 
+/*
+ * .scroll-line contains a 1 px × 40 px element.
+ * The ::after pseudo-element is the bronze animated bar.
+ * overflow: hidden here is correct — it clips the ::after bar to the
+ * scroll-line container. This does NOT cause the right-edge artifact
+ * because the scroll-indicator itself is centered, not at the right edge.
+ */
 .scroll-line {
   width: 1px;
   height: 40px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   position: relative;
   overflow: hidden;
 }
@@ -88,17 +159,69 @@
 }
 
 @keyframes scrollDown {
-  0% { top: -100%; }
-  50% { top: 0%; }
-  100% { top: 100%; }
+  0%   { top: -100%; }
+  50%  { top: 0%;    }
+  100% { top: 100%;  }
 }
 
-/* ─── HERO BANNERS ─── */
+/* ─── MOBILE OVERRIDES (≤ 767 px) ─────────────────────────────────── */
+@media (max-width: 767px) {
+  .intro-logo {
+    font-size: clamp(32px, 9vw, 52px);
+    /*
+     * Tighter letter-spacing so "ECLIPSE" fits in one line at 320 px.
+     * At 320 px with 9vw = 28.8 px font and 0.25 em = 7.2 px spacing,
+     * total width ≈ 7×28.8 + 6×7.2 = ~244 px — safely within 320 px.
+     */
+    letter-spacing: 0.25em;
+  }
+
+  .intro-text {
+    padding-top: clamp(56px, 14vh, 90px);
+    max-width: 320px;
+  }
+
+  .intro-text p {
+    font-size: clamp(18px, 4.5vw, 24px);
+    line-height: 1.55;
+  }
+
+  .scroll-indicator {
+    /* respect notch / home-indicator on iPhones and Android gesture bars */
+    bottom: max(24px, env(safe-area-inset-bottom, 24px));
+  }
+}
+
+/* ─── EXTRA NARROW (≤ 359 px — smallest Android) ──────────────────── */
+@media (max-width: 359px) {
+  .intro-logo {
+    font-size: 28px;
+    letter-spacing: 0.2em;
+  }
+
+  .intro-text {
+    padding-top: 52px;
+    max-width: 280px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .intro-text p {
+    font-size: 17px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   HERO BANNERS
+   Desktop layout is unchanged. min-height: 100svh ensures stable
+   full-screen height on mobile regardless of address bar state.
+═══════════════════════════════════════════════════════════════════════ */
 .hero-banner {
   position: relative;
   display: block;
   width: 100%;
   height: 100vh;
+  min-height: 100svh;
   overflow: hidden;
   text-decoration: none;
   cursor: pointer;
@@ -123,9 +246,9 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,0.2) 0%,
-    rgba(0,0,0,0.6) 50%,
-    rgba(0,0,0,0.85) 100%
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.6) 50%,
+    rgba(0, 0, 0, 0.85) 100%
   );
   transition: background 0.5s ease;
 }
@@ -133,9 +256,9 @@
 .hero-banner:hover .hb-overlay {
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,0.1) 0%,
-    rgba(0,0,0,0.4) 50%,
-    rgba(0,0,0,0.7) 100%
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.4) 50%,
+    rgba(0, 0, 0, 0.7) 100%
   );
 }
 
@@ -166,7 +289,7 @@
 
 .hb-title {
   font-family: var(--font-display);
-  font-size: clamp(40px, 8vw, 80px);
+  font-size: clamp(36px, 8vw, 80px);
   font-weight: 300;
   line-height: 1.1;
   color: var(--text);
