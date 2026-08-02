@@ -40,6 +40,12 @@ function App() {
   useEffect(() => {
     if (isAdminRoute) return // No smooth scroll in admin panel
 
+    // Prevent browser from automatically restoring scroll position on refresh.
+    // We want the Home page to always start at the top so the intro plays.
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual'
+    }
+
     // Initialize Lenis — exact same config as before, preserved
     const lenis = new Lenis({
       duration: 1.2,
@@ -80,6 +86,12 @@ function App() {
     //      further, otherwise scroll-position math is off by 100vh)
     if (location.hash) {
       const sectionId = location.hash.replace('#', '')
+      
+      // Safely remove the hash from the URL immediately.
+      // This ensures that if the user refreshes, they stay at the top
+      // and do not trigger a browser jump or restore previous scroll state.
+      window.history.replaceState(null, '', location.pathname + location.search)
+
       setTimeout(() => {
         scrollToSection(sectionId)
       }, 1000)

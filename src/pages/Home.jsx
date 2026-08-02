@@ -45,35 +45,11 @@ export default function Home() {
     if (!navLogo || !introLogo) return
 
     // ─────────────────────────────────────────────────────────────────────
-    // STEP 1 — Transfer position ownership from CSS to GSAP
-    //
-    // ROOT CAUSE OF LOGO JUMP:
-    //   The CSS has  top:50%; left:50%; transform:translate(-50%,-50%)
-    //   When GSAP reads the element it sees xPercent:-50, yPercent:-50.
-    //   The tween target sets xPercent:0, yPercent:0 — which shifts the
-    //   logo right/down by 50% of its own size AS A SEPARATE MOTION while
-    //   top/left are also animating. This creates the visible jump.
-    //
-    // FIX:
-    //   Read the *rendered* pixel position via getBoundingClientRect()
-    //   (which already accounts for the CSS translate) and hand those
-    //   pixel values to GSAP. GSAP inline styles override CSS styles, so
-    //   setting x:0, y:0, xPercent:0, yPercent:0 clears GSAP's internal
-    //   translate and the element stays visually where it was. After this
-    //   call GSAP is the sole owner of the element's position. No CSS vs
-    //   GSAP conflict is possible.
+    // STEP 1 — Initialize logo transform safely
+    // GSAP parses CSS translate() into pixel x/y. We force it to use
+    // xPercent/yPercent instead, so we can cleanly animate x and y to the navbar.
     // ─────────────────────────────────────────────────────────────────────
-    const initialBcr = introLogo.getBoundingClientRect()
-    gsap.set(introLogo, {
-      // Pixel position of the rendered center — EXACTLY where CSS put it
-      top: initialBcr.top,
-      left: initialBcr.left,
-      // Zero out GSAP's own transform so it doesn't fight the CSS transform
-      x: 0,
-      y: 0,
-      xPercent: 0,
-      yPercent: 0,
-    })
+    gsap.set(introLogo, { xPercent: -50, yPercent: -50, x: 0, y: 0 })
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 2 — Hide nav logo (revealed atomically at animation end)
@@ -81,19 +57,7 @@ export default function Home() {
     gsap.set(navLogo, { opacity: 0 })
 
     // ─────────────────────────────────────────────────────────────────────
-    // STEP 3 — Helper: compute centered pixel position (for onRefresh)
-    // ─────────────────────────────────────────────────────────────────────
-    function centeredLogoPosition() {
-      const logoW = introLogo.offsetWidth
-      const logoH = introLogo.offsetHeight
-      return {
-        top: (window.innerHeight - logoH) / 2,
-        left: (window.innerWidth - logoW) / 2,
-      }
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    // STEP 4 — matchMedia for mobile vs desktop differences
+    // STEP 3 — matchMedia for mobile vs desktop differences
     // ─────────────────────────────────────────────────────────────────────
     const mm = gsap.matchMedia()
 
@@ -103,8 +67,6 @@ export default function Home() {
         isMobile: '(max-width: 767px)',
       },
       (context) => {
-        const { isDesktop } = context.conditions
-
         const tl = gsap.timeline({
           scrollTrigger: {
             id: 'intro-pin',
@@ -113,67 +75,57 @@ export default function Home() {
             end: '+=100%',
             scrub: 1,
             pin: true,
-            // ─────────────────────────────────────────────────────────
-            // pinSpacing: true (default)
-            //   GSAP inserts a spacer div whose height = scroll distance.
-            //   This keeps the document flow intact so the first hero
-            //   banner appears immediately after the intro pin releases.
-            //   Setting it to false would require a second scroll to
-            //   reach the hero banner (the "extra black screen" bug).
-            // ─────────────────────────────────────────────────────────
-            pinSpacing: true,
+            // pinSpacing: false lets the next element (.hero-banner) slide up
+            // UNDERNEATH the pinned intro section, completely eliminating the black gap.
+            pinSpacing: false,
             anticipatePin: 1,
             invalidateOnRefresh: true,
-            // ─────────────────────────────────────────────────────────
-            // onRefresh — called AFTER ScrollTrigger.refresh() finishes.
-            // DO NOT call ScrollTrigger.refresh() from inside here.
-            // That caused an infinite refresh loop which corrupted the
-            // pin spacer height calculation, creating the black gap.
-            // ─────────────────────────────────────────────────────────
-            onRefresh() {
-              // Only reset the intro logo position if the animation
-              // hasn't started yet (progress === 0 means at the top)
-              const trigger = ScrollTrigger.getById('intro-pin')
-              if (trigger && trigger.progress < 0.05) {
-                const pos = centeredLogoPosition()
-                gsap.set(introLogo, { top: pos.top, left: pos.left })
-              }
-            },
           },
         })
 
         tl
-          // ── Fade out story text ──────────────────────────────────────
-          .to('.intro-text', {
-            opacity: 0,
-            y: isDesktop ? -30 : -20,
-            duration: 0.3,
-          }, 0)
+          // ── Fade out story text (move down to separate from logo) ────
+          .fromTo('.intro-text',
+            { opacity: 1, y: 0 },
+            { opacity: 0, y: 30, duration: 0.3 },
+            0
+          )
 
           // ── Fade out scroll indicator ────────────────────────────────
-          .to('.scroll-indicator', { opacity: 0, duration: 0.2 }, 0)
+          .fromTo('.scroll-indicator',
+            { opacity: 1 },
+            { opacity: 0, duration: 0.2 },
+            0
+          )
 
-          // ── Fly logo up to navbar ────────────────────────────────────
-          //
-          // We animate ONLY top, left, fontSize, letterSpacing, color.
-          // x/y/xPercent/yPercent stay at 0 (already set in STEP 1).
-          // Both start and end values are in px — no unit mismatch.
-          // This prevents the "slide + scale" jump seen when mixing
-          // CSS %-based transforms with GSAP pixel-based animation.
-          // ─────────────────────────────────────────────────────────────
-          .to('.intro-logo', {
-            duration: 1,
-            ease: 'power3.inOut',
-            top: () => {
-              const r = navLogo.getBoundingClientRect()
-              // Vertically centre the intro-logo within the nav bar slot
-              return r.top + (r.height - introLogo.offsetHeight) / 2
+          // ── Fade intro background to reveal hero banner sliding up ───
+          .fromTo('.intro-section',
+            { backgroundColor: 'var(--bg)' },
+            { backgroundColor: 'rgba(10, 10, 10, 0)', duration: 1, ease: 'power2.inOut' },
+            0
+          )
+
+          // ── Fly logo up to navbar using transforms (FLIP strategy) ───
+          // .fromTo ensures start values are recalculated perfectly on mobile
+          // resize/refresh, preventing any sudden layout jumps mid-scrub.
+          .fromTo('.intro-logo',
+            { x: 0, y: 0, scale: 1, color: 'var(--accent)' },
+            {
+              duration: 1,
+              ease: 'power3.inOut',
+              x: () => {
+                const navRect = navLogo.getBoundingClientRect()
+                return (navRect.left + navRect.width / 2) - (window.innerWidth / 2)
+              },
+              y: () => {
+                const navRect = navLogo.getBoundingClientRect()
+                return (navRect.top + navRect.height / 2) - (window.innerHeight / 2)
+              },
+              scale: () => navLogo.offsetWidth / introLogo.offsetWidth,
+              color: 'var(--text)',
             },
-            left: () => navLogo.getBoundingClientRect().left,
-            fontSize: () => window.getComputedStyle(navLogo).fontSize,
-            letterSpacing: () => window.getComputedStyle(navLogo).letterSpacing,
-            color: 'var(--text)',
-          }, 0)
+            0
+          )
 
           // ── Atomic swap: show real nav logo, hide intro logo ─────────
           .set(navLogo, { opacity: 1 })
@@ -187,7 +139,7 @@ export default function Home() {
 
           if (img) {
             gsap.fromTo(img,
-              { scale: 1.15, transformOrigin: 'center top' },
+              { scale: 1.1, transformOrigin: 'center top' },
               {
                 scale: 1,
                 ease: 'none',
@@ -203,15 +155,15 @@ export default function Home() {
 
           if (content) {
             gsap.fromTo(content,
-              { opacity: 0, y: 50 },
+              { opacity: 0, y: 40 },
               {
                 opacity: 1,
                 y: 0,
-                duration: 1,
-                ease: 'power3.out',
+                duration: 1.2,
+                ease: 'expo.out',
                 scrollTrigger: {
                   trigger: banner,
-                  start: 'top 60%',
+                  start: 'top 65%',
                 },
               }
             )

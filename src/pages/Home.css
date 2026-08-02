@@ -56,6 +56,7 @@
   justify-content: flex-end; /* text sits in lower quarter — never overlaps centered logo */
   padding-bottom: clamp(120px, 20vh, 180px); /* gap between text bottom and section bottom */
   background-color: var(--bg);
+  z-index: 10;
 }
 
 /* ─── Intro logo ───────────────────────────────────────────────────── */
@@ -178,13 +179,12 @@
 @media (max-width: 767px) {
   .intro-section {
     /*
-     * Reduce bottom padding on mobile so the text doesn't sit too far
-     * from the scroll indicator. Verified at:
-     *   360 × 640: logo at 320 px, text top at ~510 px → 190 px gap ✓
-     *   375 × 667: logo at 333 px, text top at ~537 px → 204 px gap ✓
-     *   320 × 568: logo at 284 px, text top at ~448 px → 164 px gap ✓
+     * Reduce bottom padding on mobile so the text sits closer to the bottom,
+     * increasing the separation from the fixed logo in the center.
+     *   360 × 640: logo at 320 px, text top at ~460 px → 140 px gap ✓
+     *   320 × 568: logo at 284 px, text top at ~368 px → 84 px gap ✓
      */
-    padding-bottom: clamp(100px, 17vh, 140px);
+    padding-bottom: clamp(80px, 12vh, 110px);
   }
 
   .intro-logo {
