@@ -108,14 +108,119 @@
   margin-top: 4px;
 }
 
-.loading-state, .error-state {
-  height: 80vh;
+/*
+ * Replaces the old .loading-state / .error-state rules.
+ * Uses padding-top: var(--nav-height) so content is never
+ * hidden behind the fixed navbar on mobile or desktop.
+ */
+.collection-full-state {
+  min-height: 80vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 24px;
+  padding-top: var(--nav-height);
+  padding-left: 24px;
+  padding-right: 24px;
+  background-color: var(--bg);
+}
+
+.collection-full-state__spinner {
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: coll-spin 0.8s linear infinite;
+}
+
+@keyframes coll-spin {
+  to { transform: rotate(360deg); }
+}
+
+.collection-full-state__text {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: clamp(14px, 3vw, 20px);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-muted);
+  text-align: center;
+}
+
+.collection-full-state__text--error {
+  color: #ff6b6b;
+}
+
+/* Retry and back-to-home buttons */
+.collection-retry-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #000;
+  background-color: var(--text);
+  border: 1px solid var(--text);
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.collection-retry-btn:hover {
+  background-color: transparent;
+  color: var(--text);
+}
+
+.collection-retry-btn--ghost {
+  background-color: transparent;
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+
+.collection-retry-btn--ghost:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+/* Empty state (no products in this collection) */
+.collection-empty {
+  padding: 80px 24px;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+/* ─── MOBILE IMPROVEMENTS ─────────────────────────────────────── */
+@media (max-width: 767px) {
+  .collection-header {
+    padding: 48px 20px 36px;
+  }
+
+  .collection-title {
+    font-size: clamp(24px, 8vw, 40px);
+  }
+
+  .product-info {
+    padding: 14px 16px 18px;
+    gap: 6px;
+  }
+
+  .product-price {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 359px) {
+  .collection-header {
+    padding: 36px 16px 28px;
+  }
+
+  .product-info {
+    padding: 12px 12px 16px;
+  }
 }

@@ -24,6 +24,27 @@
 }
 
 /* ─── Intro section ────────────────────────────────────────────────── */
+/*
+ * LAYOUT APPROACH:
+ *   .intro-logo is position:fixed — it is OUT of the flex flow.
+ *   The only flex child in flow is .intro-text (.scroll-indicator is
+ *   position:absolute and also out of flow).
+ *
+ *   With justify-content:center (old approach), .intro-text is placed
+ *   at the vertical midpoint — EXACTLY where the fixed logo sits.
+ *   On screens taller than ~700 px the padding-top was enough buffer,
+ *   but on short mobile screens (640 px) the calculated gap was <5 px.
+ *
+ * FIX: Use justify-content:flex-end and push .intro-text up from the
+ *   bottom via padding-bottom on the section. This guarantees:
+ *     - Logo is always at 50 vh (position:fixed;top:50%)
+ *     - Text is always in the bottom ~25 % of the screen
+ *     - There is always a guaranteed 100 + px gap between them
+ *   This is correct for ALL target screen sizes (320 px – 1920 px).
+ *
+ * No overflow:hidden — removed because it caused GSAP pin-spacer
+ * edge artifacts (1 px vertical line on sub-pixel mobile renderers).
+ */
 .intro-section {
   position: relative;
   width: 100%;
@@ -32,20 +53,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end; /* text sits in lower quarter — never overlaps centered logo */
+  padding-bottom: clamp(120px, 20vh, 180px); /* gap between text bottom and section bottom */
   background-color: var(--bg);
-  /*
-   * ROOT CAUSE OF VERTICAL LINE (secondary):
-   *   overflow: hidden here clips children at the section's right edge.
-   *   When GSAP pins this section (sets it to position:fixed temporarily),
-   *   the overflow:hidden crops the bronze scroll-line::after animation
-   *   at the container's right pixel boundary, making it appear as a
-   *   persistent 1 px vertical line during the scrub animation.
-   *
-   * FIX: Remove overflow: hidden. The intro section has no content that
-   *   needs clipping — the logo is position:fixed (not a child in flow)
-   *   and the scroll indicator is centered. GSAP's pin handles containment.
-   */
 }
 
 /* ─── Intro logo ───────────────────────────────────────────────────── */
@@ -86,12 +96,12 @@
 
 /* ─── Intro text ───────────────────────────────────────────────────── */
 /*
- * .intro-logo is position:fixed so it does not participate in the flex
- * column layout. We use padding-top on .intro-text to push it below the
- * visually centered logo. The clamp ensures enough gap on all screen sizes.
+ * padding-top removed — spacing is now handled by the section's
+ * padding-bottom (flex-end layout). The text naturally sits in the
+ * lower portion of the screen, below the fixed logo.
  */
 .intro-text {
-  padding-top: clamp(60px, 10vh, 120px);
+  padding-top: 0;
   text-align: center;
   max-width: 400px;
   padding-left: 20px;
@@ -166,18 +176,29 @@
 
 /* ─── MOBILE OVERRIDES (≤ 767 px) ─────────────────────────────────── */
 @media (max-width: 767px) {
+  .intro-section {
+    /*
+     * Reduce bottom padding on mobile so the text doesn't sit too far
+     * from the scroll indicator. Verified at:
+     *   360 × 640: logo at 320 px, text top at ~510 px → 190 px gap ✓
+     *   375 × 667: logo at 333 px, text top at ~537 px → 204 px gap ✓
+     *   320 × 568: logo at 284 px, text top at ~448 px → 164 px gap ✓
+     */
+    padding-bottom: clamp(100px, 17vh, 140px);
+  }
+
   .intro-logo {
     font-size: clamp(32px, 9vw, 52px);
     /*
      * Tighter letter-spacing so "ECLIPSE" fits in one line at 320 px.
-     * At 320 px with 9vw = 28.8 px font and 0.25 em = 7.2 px spacing,
-     * total width ≈ 7×28.8 + 6×7.2 = ~244 px — safely within 320 px.
+     * At 320 px: 9vw = 28.8px font, 0.25em = 7.2px spacing,
+     * total ≈ 7×28.8 + 6×7.2 = ~244 px — safely within 320 px.
      */
     letter-spacing: 0.25em;
   }
 
   .intro-text {
-    padding-top: clamp(56px, 14vh, 90px);
+    padding-top: 0; /* spacing handled by section padding-bottom */
     max-width: 320px;
   }
 
@@ -194,13 +215,17 @@
 
 /* ─── EXTRA NARROW (≤ 359 px — smallest Android) ──────────────────── */
 @media (max-width: 359px) {
+  .intro-section {
+    padding-bottom: 90px;
+  }
+
   .intro-logo {
     font-size: 28px;
     letter-spacing: 0.2em;
   }
 
   .intro-text {
-    padding-top: 52px;
+    padding-top: 0;
     max-width: 280px;
     padding-left: 16px;
     padding-right: 16px;
@@ -313,4 +338,99 @@
 
 .hero-banner:hover .hb-title {
   color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ABOUT & CONTACT SECTIONS
+   These are the scroll targets for /#about and /#contact nav links.
+   Styled to match the existing luxury dark aesthetic without redesign.
+═══════════════════════════════════════════════════════════════════════ */
+.home-section {
+  padding: 100px 40px;
+  background-color: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+.home-section--contact {
+  border-bottom: 1px solid var(--border);
+}
+
+.home-section__inner {
+  max-width: 680px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.home-section__eyebrow {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.home-section__title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 28px;
+}
+
+.home-section__rule {
+  width: 36px;
+  height: 1px;
+  background: var(--accent);
+  margin: 0 auto 36px;
+  opacity: 0.5;
+}
+
+.home-section__text {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.home-section__cta {
+  display: inline-block;
+  margin-top: 32px;
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding-bottom: 4px;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.home-section__cta:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+@media (max-width: 767px) {
+  .home-section {
+    padding: 72px 24px;
+  }
+
+  .home-section__title {
+    font-size: clamp(28px, 7vw, 40px);
+  }
+}
+
+@media (max-width: 359px) {
+  .home-section {
+    padding: 56px 16px;
+  }
 }

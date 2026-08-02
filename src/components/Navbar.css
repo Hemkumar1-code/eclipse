@@ -254,3 +254,101 @@
 .mobile-nav-footer a:hover {
   color: var(--text);
 }
+
+/* ─── DYNAMIC COLLECTION STATES ─────────────────────────────────── */
+
+/* Desktop dropdown — status and retry */
+.dropdown-status {
+  display: block;
+  padding: 12px 20px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.dropdown-retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 20px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s ease;
+}
+
+.dropdown-retry-btn:hover {
+  color: var(--text);
+}
+
+/* Mobile menu — collection loading status text */
+.mobile-collections-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 16px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+
+.mobile-collections-status--warn {
+  color: #FFA500;
+}
+
+/* Mobile menu — error row (text + retry button inline) */
+.mobile-collections-error-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 16px;
+}
+
+.mobile-collections-error-text {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: #ff6b6b;
+  letter-spacing: 0.05em;
+}
+
+.mobile-collections-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.mobile-collections-retry-btn:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+/* Spinner for the Loader icon inside the menu */
+@keyframes nav-spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin-icon {
+  animation: nav-spin 1s linear infinite;
+  flex-shrink: 0;
+}

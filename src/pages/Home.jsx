@@ -287,6 +287,48 @@ export default function Home() {
       {/* ── PRODUCT SECTIONS ──────────────────────────── */}
       <HomeProductSections />
 
+      {/* ── ABOUT SECTION (target for /#about nav links) ── */}
+      <section id="about" className="home-section">
+        <div className="home-section__inner">
+          <p className="home-section__eyebrow">Our Story</p>
+          <h2 className="home-section__title">About Eclipse</h2>
+          <div className="home-section__rule" aria-hidden="true" />
+          <p className="home-section__text">
+            Eclipse was born from a singular belief — that true style
+            exists in the space between light and shadow. We craft
+            premium menswear for those who understand that elegance
+            is not worn, it is lived.
+          </p>
+          <p className="home-section__text" style={{ marginTop: '20px' }}>
+            Every garment in our collection is a deliberate act of
+            restraint. Less spectacle. More substance. Designed for
+            the modern man who moves through the world with quiet
+            confidence and uncompromising taste.
+          </p>
+        </div>
+      </section>
+
+      {/* ── CONTACT SECTION (target for /#contact nav links) ── */}
+      <section id="contact" className="home-section home-section--contact">
+        <div className="home-section__inner">
+          <p className="home-section__eyebrow">Get In Touch</p>
+          <h2 className="home-section__title">Contact</h2>
+          <div className="home-section__rule" aria-hidden="true" />
+          <p className="home-section__text">
+            For enquiries, bespoke styling consultations, or wholesale
+            partnerships, our team is available Monday to Saturday,
+            10 am – 6 pm IST.
+          </p>
+          <a
+            href="mailto:hello@eclipse.co"
+            className="home-section__cta"
+            aria-label="Email Eclipse"
+          >
+            hello@eclipse.co
+          </a>
+        </div>
+      </section>
+
     </div>
   )
 }

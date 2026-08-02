@@ -138,19 +138,29 @@ export default function Login() {
         {/* Configuration warning — only shown when env vars are missing */}
         {!isSupabaseConfigured && (
           <div style={{
-            backgroundColor: 'rgba(255, 165, 0, 0.1)',
+            backgroundColor: 'rgba(255, 165, 0, 0.08)',
             border: '1px solid rgba(255, 165, 0, 0.4)',
             color: '#FFA500',
-            padding: '10px 14px',
+            padding: '14px 16px',
             borderRadius: '4px',
-            fontSize: '12px',
+            fontSize: '11px',
             marginBottom: '20px',
-            lineHeight: 1.5,
+            lineHeight: 1.7,
           }}>
-            ⚠ Supabase environment variables are not configured.<br />
-            Add <code>VITE_SUPABASE_URL</code> and{' '}
-            <code>VITE_SUPABASE_ANON_KEY</code> to your{' '}
-            <code>.env.local</code> file and redeploy.
+            <strong style={{ display: 'block', marginBottom: '6px', fontSize: '12px' }}>
+              ⚠ Supabase is not configured
+            </strong>
+            <strong>Local development:</strong> Create a{' '}
+            <code style={{ background: 'rgba(255,165,0,0.15)', padding: '1px 4px', borderRadius: '2px' }}>.env.local</code>{' '}
+            file in the project root and add:<br />
+            <code style={{ display: 'block', marginTop: '4px', marginBottom: '8px', padding: '4px 8px', background: 'rgba(0,0,0,0.3)', borderRadius: '2px', fontSize: '10px' }}>
+              VITE_SUPABASE_URL=https://your-project.supabase.co<br />
+              VITE_SUPABASE_ANON_KEY=your-anon-key
+            </code>
+            <strong>Vercel (production):</strong> Add the same two variables in{' '}
+            Vercel Dashboard → Project → Settings → Environment Variables,
+            then trigger a new deployment. Vite bakes env vars into the bundle
+            at build time — updating variables alone is not enough; a rebuild is required.
           </div>
         )}
 

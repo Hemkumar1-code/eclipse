@@ -29,6 +29,8 @@ import AdminHeroBannerForm from './pages/Admin/HeroBannerForm'
 import AdminProducts from './pages/Admin/Products'
 import AdminProductForm from './pages/Admin/ProductForm'
 
+import { setLenisInstance, scrollToSection } from './lib/lenis-instance'
+
 function App() {
   const location = useLocation()
   
@@ -38,7 +40,7 @@ function App() {
   useEffect(() => {
     if (isAdminRoute) return // No smooth scroll in admin panel
 
-    // Initialize Lenis
+    // Initialize Lenis — exact same config as before, preserved
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
@@ -54,21 +56,43 @@ function App() {
     // Connect Lenis to GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update)
 
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000)
-    })
-
+    // Store the ticker function so we can remove the EXACT same reference
+    // in cleanup. Previously `gsap.ticker.remove(lenis.raf)` was used but
+    // the ADDED function was an arrow wrapper — not lenis.raf itself — so
+    // removal was silently a no-op. Fixed here.
+    const tickerFn = (time) => { lenis.raf(time * 1000) }
+    gsap.ticker.add(tickerFn)
     gsap.ticker.lagSmoothing(0)
 
-    // Scroll to top on route change
+    // Register lenis instance so Navbar / other components can use
+    // scrollToSection() without importing or prop-drilling Lenis
+    setLenisInstance(lenis)
+
+    // Always reset scroll position on route change
     window.scrollTo(0, 0)
     lenis.scrollTo(0, { immediate: true })
 
+    // Handle hash-based navigation (e.g., navigating from /product/:id to /#about)
+    // The delay accounts for:
+    //   1. React rendering the Home page
+    //   2. Supabase fetching hero banners (~100–500 ms)
+    //   3. GSAP setting up the intro pin + spacer (must be in place before scrolling
+    //      further, otherwise scroll-position math is off by 100vh)
+    if (location.hash) {
+      const sectionId = location.hash.replace('#', '')
+      setTimeout(() => {
+        scrollToSection(sectionId)
+      }, 1000)
+    }
+
     return () => {
       lenis.destroy()
-      gsap.ticker.remove(lenis.raf)
+      gsap.ticker.remove(tickerFn) // Remove the correct reference (bug fix)
+      setLenisInstance(null)       // Clear stale ref so scrollToSection falls back to native
     }
   }, [location.pathname, isAdminRoute])
+  // NOTE: location.hash is intentionally NOT in deps — hash changes on the
+  // same pathname are handled by Navbar's onClick handlers directly.
 
   return (
     <AuthProvider>
