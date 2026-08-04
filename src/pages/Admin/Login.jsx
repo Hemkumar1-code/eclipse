@@ -3,7 +3,8 @@ import { useNavigate, Navigate } from 'react-router-dom'
 import { supabase, isSupabaseConfigured } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 
-// Translate raw Supabase / network errors into user-friendly messages
+// Translate raw Supabase / network errors into safe, user-facing messages.
+// NEVER pass raw Postgres errors, table names, or schema details to this function's return value.
 function getFriendlyError(err) {
   const msg = err?.message ?? ''
 
@@ -16,18 +17,24 @@ function getFriendlyError(err) {
     msg.includes('network') ||
     msg.includes('fetch')
   ) {
-    return 'Unable to connect to the server. Please check your internet connection and try again.'
+    return 'Unable to connect. Please check your internet connection and try again.'
   }
   if (msg.toLowerCase().includes('invalid login credentials')) {
     return 'Invalid email or password.'
   }
   if (msg.toLowerCase().includes('email not confirmed')) {
-    return 'Please verify your email address before logging in.'
+    return 'Please verify your email before signing in.'
   }
-  if (msg.includes('Access Denied')) {
+  // Role not in allowed list
+  if (msg === 'ROLE_NOT_ADMIN') {
     return 'Your account does not have admin access.'
   }
-  return msg || 'An unexpected error occurred. Please try again.'
+  // Role/profile query failed (RLS, missing table, missing row, etc.)
+  if (msg === 'ROLE_VERIFICATION_FAILED') {
+    return 'Your admin profile could not be verified. Please contact the administrator.'
+  }
+  // Any other uncaught error — safe fallback
+  return 'Unable to sign in. Please try again.'
 }
 
 export default function Login() {
@@ -76,9 +83,15 @@ export default function Login() {
         .single()
 
       if (roleError) {
-        // If we can't read the role, treat as non-admin
+        // Log the real Supabase error in dev mode so it is visible in DevTools.
+        // This exposes the actual failure (e.g. missing table, RLS block, no row)
+        // without surfacing it in the production UI.
+        if (import.meta.env.DEV) {
+          console.error('[Eclipse Admin] Role verification error:', roleError.message, roleError)
+        }
         await supabase.auth.signOut()
-        throw new Error('Access Denied: Unable to verify your account role.')
+        // Use a sentinel string so getFriendlyError maps to the correct safe message.
+        throw new Error('ROLE_VERIFICATION_FAILED')
       }
 
       const role = roleData?.role ?? 'Customer'
@@ -87,15 +100,16 @@ export default function Login() {
         navigate('/admin')
       } else {
         await supabase.auth.signOut()
-        throw new Error('Access Denied: You do not have administrator privileges.')
+        throw new Error('ROLE_NOT_ADMIN')
       }
     } catch (err) {
-      // Log full error in dev for debugging, never log passwords
+      // Log full error in dev for debugging — never log passwords or tokens
       if (import.meta.env.DEV) {
         console.error('[Eclipse Admin Login] Error:', err?.message ?? err)
       }
       setError(getFriendlyError(err))
     } finally {
+      // Always reset loading — guaranteed in every success and error path
       setLoading(false)
     }
   }

@@ -98,6 +98,16 @@ export default function Home() {
         })
 
         tl
+          // ── DETERMINISTIC INITIAL STATE ANCHORS ──────────────────────
+          // These .set() keyframes at position 0 make the intro/navbar logo
+          // states part of the scrubbed timeline itself. When ScrollTrigger
+          // calls refresh() (e.g. from ResizeObserver), it seeks the playhead
+          // back to 0 and re-applies these values, guaranteeing the intro logo
+          // is always visible at the top of the page regardless of how many
+          // times the timeline is rebuilt or refreshed.
+          .set('.intro-logo', { autoAlpha: 1 }, 0)
+          .set(navLogo, { autoAlpha: 0 }, 0)
+
           // ── Fade out story text (move down to separate from logo) ────
           .fromTo('.intro-text',
             { opacity: 1, y: 0 },
@@ -142,17 +152,17 @@ export default function Home() {
           )
 
           // ── Crossfade swap: show real nav logo, hide intro logo ──────
-          // Using .fromTo() explicitly defines the start and end states.
-          // This prevents ScrollTrigger's immediateRender from accidentally
-          // hiding the intro logo on initial page load during pre-calculation.
+          // .fromTo defines both bounds explicitly. Combined with the .set()
+          // anchors above, the timeline has a deterministic state at both
+          // progress 0 and progress 1 — safe for any refresh() or re-seek.
           .fromTo(navLogo,
             { autoAlpha: 0 },
-            { autoAlpha: 1, duration: 0.05, immediateRender: false },
+            { autoAlpha: 1, duration: 0.05 },
             0.95
           )
           .fromTo('.intro-logo',
             { autoAlpha: 1 },
-            { autoAlpha: 0, duration: 0.05, immediateRender: false },
+            { autoAlpha: 0, duration: 0.05 },
             0.95
           )
 
@@ -209,7 +219,13 @@ export default function Home() {
       // Remove all GSAP inline styles from the intro logo (restores CSS)
       gsap.set('.intro-logo', { clearProps: 'all' })
     }
-  }, [loading, banners])
+  // [loading] only — not [loading, banners].
+  // fetchBanners() calls setBanners() before setLoading(false), so banners
+  // data and DOM refs are already populated on the first GSAP run.
+  // Including `banners` in deps would cause double-initialization because
+  // setBanners() creates a new array reference, triggering a second run
+  // that tears down and rebuilds all ScrollTriggers unnecessarily.
+  }, [loading])
 
   const addToRefs = (el) => {
     if (el && !bannersRef.current.includes(el)) {
