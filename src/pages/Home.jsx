@@ -49,7 +49,7 @@ export default function Home() {
     // GSAP parses CSS translate() into pixel x/y. We force it to use
     // xPercent/yPercent instead, so we can cleanly animate x and y to the navbar.
     // ─────────────────────────────────────────────────────────────────────
-    gsap.set(introLogo, { xPercent: -50, yPercent: -50, x: 0, y: 0 })
+    gsap.set(introLogo, { xPercent: -50, yPercent: -50, x: 0, y: 0, autoAlpha: 1 })
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 2 — Hide nav logo (revealed safely at animation end)
@@ -142,10 +142,19 @@ export default function Home() {
           )
 
           // ── Crossfade swap: show real nav logo, hide intro logo ──────
-          // Using .to() with duration instead of .set() ensures GSAP mathematically
-          // interpolates the values, guaranteeing a perfect reverse scrub without getting stuck.
-          .to(navLogo, { autoAlpha: 1, duration: 0.05 }, 0.95)
-          .to('.intro-logo', { autoAlpha: 0, duration: 0.05 }, 0.95)
+          // Using .fromTo() explicitly defines the start and end states.
+          // This prevents ScrollTrigger's immediateRender from accidentally
+          // hiding the intro logo on initial page load during pre-calculation.
+          .fromTo(navLogo,
+            { autoAlpha: 0 },
+            { autoAlpha: 1, duration: 0.05, immediateRender: false },
+            0.95
+          )
+          .fromTo('.intro-logo',
+            { autoAlpha: 1 },
+            { autoAlpha: 0, duration: 0.05, immediateRender: false },
+            0.95
+          )
 
         // ── Hero banner parallax ──────────────────────────────────────
         bannersRef.current.forEach((banner) => {
