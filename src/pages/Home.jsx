@@ -52,14 +52,26 @@ export default function Home() {
     gsap.set(introLogo, { xPercent: -50, yPercent: -50, x: 0, y: 0 })
 
     // ─────────────────────────────────────────────────────────────────────
-    // STEP 2 — Hide nav logo (revealed atomically at animation end)
+    // STEP 2 — Hide nav logo (revealed safely at animation end)
+    // autoAlpha handles both opacity and visibility for perfect reversing
     // ─────────────────────────────────────────────────────────────────────
-    gsap.set(navLogo, { opacity: 0 })
+    gsap.set(navLogo, { autoAlpha: 0 })
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 3 — matchMedia for mobile vs desktop differences
     // ─────────────────────────────────────────────────────────────────────
     const mm = gsap.matchMedia()
+
+    // Setup debounced ResizeObserver to refresh ScrollTrigger if document height
+    // changes (e.g. when dynamic product skeletons are replaced with real data).
+    let rafId = null
+    const ro = new ResizeObserver(() => {
+      if (rafId) cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(() => {
+        ScrollTrigger.refresh()
+      })
+    })
+    ro.observe(document.body)
 
     mm.add(
       {
@@ -73,7 +85,9 @@ export default function Home() {
             trigger: '.intro-section',
             start: 'top top',
             end: '+=100%',
-            scrub: 1,
+            // scrub: true (instant) is 1:1 with native touch on mobile, preventing
+            // the 'jerky' double-smoothing lag caused by scrub: 1
+            scrub: true,
             pin: true,
             // pinSpacing: false lets the next element (.hero-banner) slide up
             // UNDERNEATH the pinned intro section, completely eliminating the black gap.
@@ -127,9 +141,11 @@ export default function Home() {
             0
           )
 
-          // ── Atomic swap: show real nav logo, hide intro logo ─────────
-          .set(navLogo, { opacity: 1 })
-          .set('.intro-logo', { opacity: 0 })
+          // ── Crossfade swap: show real nav logo, hide intro logo ──────
+          // Using .to() with duration instead of .set() ensures GSAP mathematically
+          // interpolates the values, guaranteeing a perfect reverse scrub without getting stuck.
+          .to(navLogo, { autoAlpha: 1, duration: 0.05 }, 0.95)
+          .to('.intro-logo', { autoAlpha: 0, duration: 0.05 }, 0.95)
 
         // ── Hero banner parallax ──────────────────────────────────────
         bannersRef.current.forEach((banner) => {
@@ -175,6 +191,9 @@ export default function Home() {
     )
 
     return () => {
+      ro.disconnect()
+      if (rafId) cancelAnimationFrame(rafId)
+      
       mm.revert()
       // Restore nav logo for pages other than Home
       gsap.set('#nav-logo', { clearProps: 'all' })

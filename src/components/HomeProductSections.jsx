@@ -41,7 +41,11 @@ function ProductCard({ product }) {
 
         <img
           className="hp-card__image"
-          src={product.image || 'https://via.placeholder.com/600x800?text=ECLIPSE'}
+          src={product.image || "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='800' viewBox='0 0 600 800'%3E%3Crect width='600' height='800' fill='%23111'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' font-weight='300' letter-spacing='8' fill='%23333'%3EECLIPSE%3C/text%3E%3C/svg%3E"}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='800' viewBox='0 0 600 800'%3E%3Crect width='600' height='800' fill='%23111'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' font-weight='300' letter-spacing='8' fill='%23333'%3EECLIPSE%3C/text%3E%3C/svg%3E";
+          }}
           alt={product.name}
           loading="lazy"
         />

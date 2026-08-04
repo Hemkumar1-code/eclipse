@@ -129,14 +129,20 @@ export default function Navbar() {
                   <span className="dropdown-status">Loading…</span>
                 )}
                 {!collectionsLoading && collectionsError && (
-                  <button
-                    className="dropdown-retry-btn"
-                    onClick={fetchCollections}
-                    aria-label="Retry loading collections"
-                  >
-                    <RefreshCw size={11} style={{ display: 'inline', marginRight: '5px' }} />
-                    Retry
-                  </button>
+                  <div style={{ padding: '8px 20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '10px', color: '#ff6b6b', lineHeight: 1.4 }}>
+                      Collections are temporarily unavailable.
+                    </span>
+                    <button
+                      className="dropdown-retry-btn"
+                      style={{ padding: 0 }}
+                      onClick={fetchCollections}
+                      aria-label="Retry loading collections"
+                    >
+                      <RefreshCw size={11} style={{ display: 'inline', marginRight: '5px' }} />
+                      Please try again
+                    </button>
+                  </div>
                 )}
                 {!collectionsLoading && !collectionsError && collections.length === 0 && (
                   <span className="dropdown-status">No collections found</span>
@@ -228,22 +234,18 @@ export default function Navbar() {
                     </span>
                   )}
 
-                  {!collectionsLoading && collectionsError === 'not-configured' && (
-                    <span className="mobile-collections-status mobile-collections-status--warn">
-                      Supabase not configured
-                    </span>
-                  )}
-
-                  {!collectionsLoading && collectionsError === 'fetch-failed' && (
-                    <div className="mobile-collections-error-row">
-                      <span className="mobile-collections-error-text">Failed to load</span>
+                  {!collectionsLoading && collectionsError && (
+                    <div className="mobile-collections-error-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '10px' }}>
+                      <span className="mobile-collections-error-text" style={{ lineHeight: 1.4, paddingRight: '20px' }}>
+                        Collections are temporarily unavailable.
+                      </span>
                       <button
                         className="mobile-collections-retry-btn"
                         onClick={fetchCollections}
                         aria-label="Retry loading collections"
                       >
                         <RefreshCw size={11} />
-                        Retry
+                        Please try again
                       </button>
                     </div>
                   )}
